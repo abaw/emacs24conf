@@ -1,0 +1,63 @@
+* ELPA configuration
+#+begin_src emacs-lisp
+(require 'package)
+(add-to-list 'package-archives
+	     '("marmalade" . "http://marmalade-repo.org/packages/"))
+(package-initialize)
+
+(defun abaw/package-install (package)
+  "install a package using `package-install' if it has not been installed yet."
+  (unless (package-installed-p package)
+    (package-install package)))
+#+end_src
+
+* Basic Configuration
+#+begin_src emacs-lisp
+;; a bigger kill-ring buffer
+(setq kill-ring-max 200)
+
+;; utf-8 is good
+(set-language-environment 'utf-8)
+
+;; yes/no => y/n
+(fset 'yes-or-no-p 'y-or-n-p)
+
+;; some global key bindings
+(global-set-key (kbd "C-c r") 'font-lock-fontify-buffer)
+(global-set-key (kbd "C-2") 'set-mark-command)
+(global-set-key (kbd "C-c g") 'goto-line)
+(global-set-key (kbd "M-/") 'hippie-expand)
+#+end_src
+
+* ido mode
+#+begin_src emacs-lisp
+(require 'ido)
+(ido-mode t)
+;;(fset 'read-file-name 'ido-read-file-name)
+(setq ido-enable-flex-matching t)
+
+;; (setq ido-default-buffer-method 'selected-window)
+;; (setq ido-default-file-method 'selected-window)
+#+end_src
+
+* lisp mode
+#+begin_src emacs-lisp
+  (abaw/package-install 'paredit)
+  (abaw/package-install 'hl-sexp)
+  
+  (defun abaw/lisp-hook ()
+    (eldoc-mode t)
+    (hl-sexp-mode t)
+    (paredit-mode t))
+  
+  (mapc (lambda (mode-hook)
+          (add-hook mode-hook 'abaw/lisp-hook))
+        '(lisp-mode-hook emacs-lisp-mode-hook ielm-mode-hook))
+#+end_src
+
+* Save customization to other place
+#+begin_src emacs-lisp
+  (setq custom-file (expand-file-name "custom.el" abaw/top-dir))
+  (when (file-exists-p custom-file)
+    (load-file custom-file))
+#+end_src
