@@ -12,23 +12,32 @@
 #+end_src
 
 * Basic Configuration
+I need cl package for easier programming envinronment.
+#+begin_src emacs-lisp
+  (eval-when-compile
+      (require 'cl))
+#+end_src
+
 #+begin_src emacs-lisp
 ;; a bigger kill-ring buffer
 (setq kill-ring-max 200)
 
-;; utf-8 is good
-(set-language-environment 'utf-8)
-
 ;; yes/no => y/n
 (fset 'yes-or-no-p 'y-or-n-p)
+#+end_src
 
-;; some global key bindings
+To configure utf-8 environment, but I don't know if this is good enough?? Do I need to set-keyboard-coding-system??
+#+begin_src emacs-lisp
+(set-language-environment 'utf-8)
+#+end_src
+
+Here configures some global key bindings
+#+begin_src emacs-lisp
 (global-set-key (kbd "C-c r") 'font-lock-fontify-buffer)
 (global-set-key (kbd "C-2") 'set-mark-command)
 (global-set-key (kbd "C-c g") 'goto-line)
 (global-set-key (kbd "M-/") 'hippie-expand)
 #+end_src
-
 * ido mode
 #+begin_src emacs-lisp
 (require 'ido)
@@ -54,6 +63,44 @@
           (add-hook mode-hook 'abaw/lisp-hook))
         '(lisp-mode-hook emacs-lisp-mode-hook ielm-mode-hook))
 #+end_src
+
+* org mode
+Here some org-mode helper functions/commands
+#+begin_src emacs-lisp
+  (defun abaw/org-src-split ()
+    "Split an org source block into two blocks at point. If a
+  region has been marked, it splits a org source block into three
+  blocks."
+    (interactive)
+    (let ((head (org-babel-where-is-src-block-head))
+          headline)
+      (unless head
+        (error "Point is not inside a source block"))
+  
+      (setq headline (save-excursion
+                       (goto-char head)
+                       (end-of-line)
+                       (buffer-substring-no-properties head (point))))
+  
+      (flet ((split-at-pos (pos)
+                           (goto-char pos)
+                           (beginning-of-line)
+                           (insert (format "#+end_src\n%s\n" headline))))
+  
+        (if (region-active-p)
+            (progn
+              (split-at-pos (save-excursion
+                              (goto-char (region-end))
+                              (if (bolp)
+                                  (point)
+                                (1+ (line-end-position)))))
+              (split-at-pos (region-beginning)))
+            (split-at-pos (point))))))
+  
+#+end_src
+
+#+results:
+: abaw/org-src-split
 
 * Save customization to other place
 #+begin_src emacs-lisp
