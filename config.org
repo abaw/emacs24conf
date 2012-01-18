@@ -1,3 +1,15 @@
+#+begin_src emacs-lisp
+  (defun abaw/join-path (&rest components)
+    "Join path components into a path and return it. For
+    example, (abaw/join-path \"a\" \"b\" \"c\") returns \"a/b/c\"
+    in unix."
+    (when components
+      (if (cdr components)
+          (concat (file-name-as-directory (car components))
+                  (apply 'abaw/join-path (cdr components)))
+        (car components))))
+#+end_src
+
 * ELPA configuration
 #+begin_src emacs-lisp
 (require 'package)
@@ -10,6 +22,41 @@
   (unless (package-installed-p package)
     (package-install package)))
 #+end_src
+
+* el-get configuration
+This code is modified from
+emacs-kicker(https://github.com/dimitri/emacs-kicker). It can install
+el-get automatically if we don't have installed it yet.
+
+#+begin_src emacs-lisp
+  (add-to-list 'load-path (abaw/join-path user-emacs-directory "el-get" "el-get"))
+  
+  (unless (require 'el-get nil t)
+    (url-retrieve
+     "https://github.com/dimitri/el-get/raw/master/el-get-install.el"
+     (lambda (s)
+       (end-of-buffer)
+       (eval-print-last-sexp))))
+#+end_src
+
+** Addtional local recipes
+I want to get yasnippet from its new github repo:
+#+begin_src emacs-lisp
+  (add-to-list 'el-get-sources
+               (let ((orig-def (el-get-package-def "yasnippet")))
+                 (plist-put
+                  (plist-put
+                   orig-def
+                   :type 'git)
+                  :url "https://github.com/capitaomorte/yasnippet.git")))
+#+end_src
+
+** Install packages
+#+begin_src emacs-lisp
+  (el-get 'wait "magit" "yasnippet")
+  
+#+end_src
+
 
 * Basic Configuration
 I need cl package for easier programming envinronment.
@@ -38,18 +85,19 @@ Here configures some global key bindings
 (global-set-key (kbd "C-c g") 'goto-line)
 (global-set-key (kbd "M-/") 'hippie-expand)
 #+end_src
-* ido mode
-#+begin_src emacs-lisp
-(require 'ido)
-(ido-mode t)
-;;(fset 'read-file-name 'ido-read-file-name)
-(setq ido-enable-flex-matching t)
 
-;; (setq ido-default-buffer-method 'selected-window)
-;; (setq ido-default-file-method 'selected-window)
+I use a lot of ido a lot
+#+begin_src emacs-lisp
+  (require 'ido)
+  (ido-mode t)
+  (setq read-file-name-function 'ido-read-file-name)
+  (setq ido-enable-flex-matching t)
+  
+  ;; (setq ido-default-buffer-method 'selected-window)
+  ;; (setq ido-default-file-method 'selected-window)
 #+end_src
 
-* lisp mode
+Turn on paredit and hl-sexp for lisp related modes
 #+begin_src emacs-lisp
   (abaw/package-install 'paredit)
   (abaw/package-install 'hl-sexp)
@@ -64,7 +112,24 @@ Here configures some global key bindings
         '(lisp-mode-hook emacs-lisp-mode-hook ielm-mode-hook))
 #+end_src
 
-* org mode
+Some of my snippets need time-stamp package
+#+begin_src emacs-lisp
+  (require 'time-stamp)
+#+end_src
+
+Enable yasnippet
+#+begin_src emacs-lisp
+  (yas/global-mode t)
+  (let ((snippet-dir (abaw/join-path abaw/top-dir "snippets")))
+    (when (file-directory-p snippet-dir)
+      (yas/load-directory snippet-dir)))
+  ;; if we use setq, the default "TAB" key will not be unbind.
+  (custom-set-variables '(yas/trigger-key "<C-tab>"))
+#+end_src
+
+#+results:
+
+* Configuraton for org mode
 Here some org-mode helper functions/commands
 #+begin_src emacs-lisp
   (defun abaw/org-src-split ()
@@ -101,6 +166,10 @@ Here some org-mode helper functions/commands
 
 #+results:
 : abaw/org-src-split
+
+* Configurations for version control systems
+
+** magit
 
 * Save customization to other place
 #+begin_src emacs-lisp
