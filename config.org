@@ -59,12 +59,6 @@ I want to get yasnippet from its new github repo:
 
 
 * Basic Configuration
-I need cl package for easier programming envinronment.
-#+begin_src emacs-lisp
-  (eval-when-compile
-      (require 'cl))
-#+end_src
-
 #+begin_src emacs-lisp
 ;; a bigger kill-ring buffer
 (setq kill-ring-max 200)
@@ -147,20 +141,20 @@ Here some org-mode helper functions/commands
                        (end-of-line)
                        (buffer-substring-no-properties head (point))))
   
-      (flet ((split-at-pos (pos)
+      (let ((split-at-pos (lambda (pos)
                            (goto-char pos)
                            (beginning-of-line)
-                           (insert (format "#+end_src\n%s\n" headline))))
+                           (insert (format "#+end_src\n%s\n" headline)))))
   
         (if (region-active-p)
             (progn
-              (split-at-pos (save-excursion
+              (funcall split-at-pos (save-excursion
                               (goto-char (region-end))
                               (if (bolp)
                                   (point)
                                 (1+ (line-end-position)))))
-              (split-at-pos (region-beginning)))
-            (split-at-pos (point))))))
+              (funcall split-at-pos (region-beginning)))
+            (funcall split-at-pos (point))))))
   
 #+end_src
 
