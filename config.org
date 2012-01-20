@@ -61,24 +61,53 @@ I want to get yasnippet from its new github repo:
 * Basic Configuration
 I need cl package for easier programming envinronment.
 #+begin_src emacs-lisp
-  (eval-when-compile
-      (require 'cl))
+  (require 'cl)
 #+end_src
 
+** enlarge the kill ring
 #+begin_src emacs-lisp
-;; a bigger kill-ring buffer
 (setq kill-ring-max 200)
+#+end_src
 
-;; yes/no => y/n
+** yes/no => y/n
+#+begin_src emacs-lisp
 (fset 'yes-or-no-p 'y-or-n-p)
 #+end_src
 
-To configure utf-8 environment, but I don't know if this is good enough?? Do I need to set-keyboard-coding-system??
+** utf-8 environment
+But I don't know if this is good enough?? Do I need to set-keyboard-coding-system??
 #+begin_src emacs-lisp
 (set-language-environment 'utf-8)
 #+end_src
 
-Here configures some global key bindings
+** show trailing white spaces
+#+begin_src emacs-lisp
+(setq-default show-trailing-whitespace t)
+#+end_src
+
+#+results:
+: t
+
+** highlight matching parens
+#+begin_src emacs-lisp
+(show-paren-mode t)
+#+end_src
+
+#+results:
+: t
+
+
+** I want more spaces
+#+begin_src emacs-lisp
+  (scroll-bar-mode -1)
+  (tool-bar-mode -1)
+  (menu-bar-mode -99) ;; tool bar be accessed through C-mouse-3
+  (fringe-mode 0)
+#+end_src
+
+#+results:
+
+** Here configures some global key bindings
 #+begin_src emacs-lisp
 (global-set-key (kbd "C-c r") 'font-lock-fontify-buffer)
 (global-set-key (kbd "C-2") 'set-mark-command)
@@ -86,7 +115,7 @@ Here configures some global key bindings
 (global-set-key (kbd "M-/") 'hippie-expand)
 #+end_src
 
-I use a lot of ido a lot
+** ido
 #+begin_src emacs-lisp
   (require 'ido)
   (ido-mode t)
@@ -97,7 +126,7 @@ I use a lot of ido a lot
   ;; (setq ido-default-file-method 'selected-window)
 #+end_src
 
-Turn on paredit and hl-sexp for lisp related modes
+** Turn on paredit and hl-sexp for lisp related modes
 #+begin_src emacs-lisp
   (abaw/package-install 'paredit)
   (abaw/package-install 'hl-sexp)
@@ -112,6 +141,7 @@ Turn on paredit and hl-sexp for lisp related modes
         '(lisp-mode-hook emacs-lisp-mode-hook ielm-mode-hook))
 #+end_src
 
+** yasnippet
 Some of my snippets need time-stamp package
 #+begin_src emacs-lisp
   (require 'time-stamp)
