@@ -201,9 +201,9 @@ Some of my snippets need time-stamp package
 Enable yasnippet
 #+begin_src emacs-lisp :results silent
   (yas/global-mode t)
-  (let ((snippet-dir (abaw/join-path abaw/top-dir "snippets")))
-    (when (file-directory-p snippet-dir)
-      (yas/load-directory snippet-dir)))
+  (setq yas/snippet-dirs (abaw/join-path abaw/top-dir "snippets"))
+  (yas/load-directory yas/snippet-dirs)
+  
   ;; if we use setq, the default "TAB" key will not be unbind.
   (custom-set-variables '(yas/trigger-key "<C-tab>"))
 #+end_src
