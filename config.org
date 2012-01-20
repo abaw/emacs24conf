@@ -40,7 +40,7 @@ el-get automatically if we don't have installed it yet.
 #+end_src
 
 ** Addtional local recipes
-I want to get yasnippet from its new github repo:
+*** I want to get yasnippet from its new github repo:
 #+begin_src emacs-lisp
   (add-to-list 'el-get-sources
                (let ((orig-def (el-get-package-def "yasnippet")))
@@ -50,12 +50,19 @@ I want to get yasnippet from its new github repo:
                    :type 'git)
                   :url "https://github.com/capitaomorte/yasnippet.git")))
 #+end_src
+*** color-moccur
+#+begin_src emacs-lisp :results silent
+    (add-to-list 'el-get-sources
+                 '(:name color-moccur :type emacswiki :website "http://www.emacswiki.org/emacs/color-moccur.el" :features "color-moccur"))
+#+end_src
+
 
 ** Install packages
-#+begin_src emacs-lisp
-  (el-get 'wait "magit" "yasnippet")
-  
+#+begin_src emacs-lisp :results silient
+  (el-get 'wait "magit" "yasnippet" "color-moccur")
 #+end_src
+
+#+results:
 
 
 * Basic Configuration
@@ -63,6 +70,20 @@ I need cl package for easier programming envinronment.
 #+begin_src emacs-lisp
   (require 'cl)
 #+end_src
+
+** dired
+Let dired do some recursive operations
+#+begin_src emacs-lisp
+(setq dired-recursive-copies 'top)
+(setq dired-recursive-deletes 'top)
+#+end_src
+** show column numbers
+#+begin_src emacs-lisp
+(column-number-mode 1)
+#+end_src
+
+#+results:
+: t
 
 ** enlarge the kill ring
 #+begin_src emacs-lisp
@@ -96,12 +117,56 @@ But I don't know if this is good enough?? Do I need to set-keyboard-coding-syste
 #+results:
 : t
 
+** rectangle selection using cua-mode
+   This also remaps a lot of key bindings of commands. Here are some
+   examples:
+     - set-mark-command -> cua-set-mark
+     - yank, clipboard-yank, x-clipboard-yank -> cua-yank
+     - exchange-point-and-mark -> cua-exchange-point-and-mark
+       exchange point and mark without activating the region.
+#+begin_src emacs-lisp
+(cua-mode t)
+(setq cua-enable-cua-keys nil)
+#+end_src
+
+#+results:
+
+** ibuffer
+#+begin_src emacs-lisp
+  (require 'ibuffer)
+      (global-set-key (kbd "C-x C-b") 'ibuffer)
+      (setq ibuffer-saved-filter-groups
+            (quote (("default"
+                     ("Org"
+                      (mode . org-mode))
+                     ("Version Control Systems"
+                      (mode . magit-mode))
+                     ("Programming"
+                      (or
+                       (mode . c-mode)
+                       (mode . c++-mode)
+                       (mode . perl-mode)
+                       (mode . python-mode)
+                       (mode . lisp-mode)
+                       (mode . emacs-lisp-mode)
+                       (mode . haskell-mode)
+                       ))))))
+      (add-hook 'ibuffer-mode-hook
+                (lambda ()
+                  (ibuffer-switch-to-saved-filter-groups "default")))
+  
+  
+  
+#+end_src
+
+#+results:
+| lambda | nil | (ibuffer-switch-to-saved-filter-groups default) |
 
 ** I want more spaces
 #+begin_src emacs-lisp
   (scroll-bar-mode -1)
   (tool-bar-mode -1)
-  (menu-bar-mode -99) ;; tool bar be accessed through C-mouse-3
+  (menu-bar-mode -1)
   (fringe-mode 0)
 #+end_src
 
@@ -126,20 +191,25 @@ But I don't know if this is good enough?? Do I need to set-keyboard-coding-syste
   ;; (setq ido-default-file-method 'selected-window)
 #+end_src
 
-** Turn on paredit and hl-sexp for lisp related modes
-#+begin_src emacs-lisp
+** turn paredit and hl-sexp for lisp related modes
+#+begin_src emacs-lisp :results silent
   (abaw/package-install 'paredit)
   (abaw/package-install 'hl-sexp)
   
   (defun abaw/lisp-hook ()
-    (eldoc-mode t)
-    (hl-sexp-mode t)
-    (paredit-mode t))
+    (eldoc-mode 1)
+    (hl-sexp-mode 1)
+    (paredit-mode 1))
   
   (mapc (lambda (mode-hook)
           (add-hook mode-hook 'abaw/lisp-hook))
         '(lisp-mode-hook emacs-lisp-mode-hook ielm-mode-hook))
+  
+  (add-hook 'minibuffer-setup-hook (lambda ()
+                                     (when (eq this-command 'eval-expression)
+                                         (paredit-mode 1))))
 #+end_src
+
 
 ** yasnippet
 Some of my snippets need time-stamp package
