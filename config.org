@@ -191,6 +191,12 @@ But I don't know if this is good enough?? Do I need to set-keyboard-coding-syste
                                          (paredit-mode 1))))
 #+end_src
 
+** zenburn color theme
+#+begin_src emacs-lisp :results silent
+(abaw/package-install 'zenburn-theme)
+(load-theme 'zenburn t)
+#+end_src
+
 
 ** yasnippet
 Some of my snippets need time-stamp package
