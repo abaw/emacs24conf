@@ -1,42 +1,44 @@
+* ELPA configuration
+Add additional archives and do (package-initialize)
 #+begin_src emacs-lisp :results silent
-  (defun abaw/join-path (&rest components)
-    "Join path components into a path and return it. For
-    example, (abaw/join-path \"a\" \"b\" \"c\") returns \"a/b/c\"
-    in unix."
-    (when components
-      (if (cdr components)
-          (concat (file-name-as-directory (car components))
-                  (apply 'abaw/join-path (cdr components)))
-        (car components))))
+  (require 'package)
+  (add-to-list 'package-archives
+               '("marmalade" . "http://marmalade-repo.org/packages/"))
+  (package-initialize)
 #+end_src
 
-* ELPA configuration
+Do (package-refresh-contents) if we have never done that yet.
 #+begin_src emacs-lisp :results silent
-(require 'package)
-(add-to-list 'package-archives
-	     '("marmalade" . "http://marmalade-repo.org/packages/"))
-(package-initialize)
+  (dolist (archive package-archives)
+    (let* ((dir (expand-file-name "archives" package-user-dir))
+           (dir (expand-file-name (car archive) dir)))
+      (unless (file-directory-p dir)
+        (package-refresh-contents)
+        (return))))
+#+end_src
 
-(defun abaw/package-install (package)
-  "install a package using `package-install' if it has not been installed yet."
-  (unless (package-installed-p package)
-    (package-install package)))
+Provide a convinent function to install packages.
+#+begin_src emacs-lisp :results silent
+  (defun abaw/package-install (package)
+    "install a package using `package-install' if it has not been installed yet."
+    (unless (package-installed-p package)
+      (package-install package)))
 #+end_src
 
 * el-get configuration
 This code is modified from
 emacs-kicker(https://github.com/dimitri/emacs-kicker). It can install
-el-get automatically if we don't have installed it yet.
+el-get automatically synchronously if we don't have installed it yet.
 
 #+begin_src emacs-lisp :results silent
-  (add-to-list 'load-path (abaw/join-path user-emacs-directory "el-get" "el-get"))
+  (setq el-get-dir (file-name-as-directory (locate-user-emacs-file "el-get")))
+  (add-to-list 'load-path (abaw/join-path el-get-dir "el-get"))
   
   (unless (require 'el-get nil t)
-    (url-retrieve
-     "https://github.com/dimitri/el-get/raw/master/el-get-install.el"
-     (lambda (s)
-       (end-of-buffer)
-       (eval-print-last-sexp))))
+    (with-current-buffer (url-retrieve-synchronously "https://github.com/dimitri/el-get/raw/master/el-get-install.el")
+      (end-of-buffer)
+      (eval-print-last-sexp)))
+  
 #+end_src
 
 ** Addtional local recipes
@@ -63,11 +65,6 @@ el-get automatically if we don't have installed it yet.
 #+end_src
 
 * Basic Configuration
-I need cl package for easier programming envinronment.
-#+begin_src emacs-lisp :results silent
-  (require 'cl)
-#+end_src
-
 ** dired
 Let dired do some recursive operations
 #+begin_src emacs-lisp :results silent
