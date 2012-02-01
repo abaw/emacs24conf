@@ -58,12 +58,6 @@ el-get automatically synchronously if we don't have installed it yet.
                  '(:name color-moccur :type emacswiki :website "http://www.emacswiki.org/emacs/color-moccur.el" :features "color-moccur"))
 #+end_src
 
-
-** Install packages
-#+begin_src emacs-lisp :results silent
-  (el-get 'wait "magit" "yasnippet" "color-moccur")
-#+end_src
-
 * Basic Configuration
 ** dired
 Let dired do some recursive operations
@@ -195,6 +189,12 @@ But I don't know if this is good enough?? Do I need to set-keyboard-coding-syste
 #+end_src
 
 
+** color-moccur
+#+begin_src emacs-lisp :results silent
+  (el-get 'wait "color-moccur")
+#+end_src
+
+
 ** yasnippet
 Some of my snippets need time-stamp package
 #+begin_src emacs-lisp :results silent
@@ -203,6 +203,7 @@ Some of my snippets need time-stamp package
 
 Enable yasnippet
 #+begin_src emacs-lisp :results silent
+  (el-get 'wait "yasnippet")
   (yas/global-mode t)
   (setq yas/snippet-dirs (abaw/join-path abaw/top-dir "snippets"))
   (yas/load-directory yas/snippet-dirs)
@@ -249,6 +250,10 @@ Here some org-mode helper functions/commands
 * Configurations for version control systems
 
 ** magit
+#+begin_src emacs-lisp :results silent
+(el-get 'wait "magit")
+#+end_src
+
 
 * Save customization to other place
 #+begin_src emacs-lisp :results silent
