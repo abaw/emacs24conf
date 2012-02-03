@@ -59,6 +59,32 @@ el-get automatically synchronously if we don't have installed it yet.
 #+end_src
 
 * Basic Configuration
+** a minor mode for my global key bindings
+According to scottfrazer's brilliant idea, we can use a minor mode for
+defining global key bindings to prevent our key bindings overriden by
+other major modes. See
+http://stackoverflow.com/questions/683425/globally-override-key-binding-in-emac.
+
+#+begin_src emacs-lisp :results silent
+  (defvar my-global-keys-mode-map (make-sparse-keymap))
+  (define-minor-mode my-global-keys-mode
+    "A minor mode used to define my global key bindings"
+    :global t
+    :keymap 'my-global-keys-mode-map)
+  (my-global-keys-mode 1)
+
+  (defun abaw/global-set-key (key command)
+    "The same as `global-set-key' except the key bindings
+    configured by this will not be overriden by other major
+    modes."
+    (interactive "KSet key globally: \nCSet key %s to command: ")
+    (or (vectorp key) (stringp key)
+        (signal 'wrong-type-argument (list 'arrayp key)))
+    (define-key my-global-keys-mode-map key command))
+
+#+end_src
+
+
 ** dired
 Let dired do some recursive operations
 #+begin_src emacs-lisp :results silent
