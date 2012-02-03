@@ -137,7 +137,7 @@ But I don't know if this is good enough?? Do I need to set-keyboard-coding-syste
 ** ibuffer
 #+begin_src emacs-lisp :results silent
   (require 'ibuffer)
-      (global-set-key (kbd "C-x C-b") 'ibuffer)
+      (abaw/global-set-key (kbd "C-x C-b") 'ibuffer)
       (setq ibuffer-saved-filter-groups
             (quote (("default"
                      ("Org"
@@ -172,10 +172,10 @@ But I don't know if this is good enough?? Do I need to set-keyboard-coding-syste
 
 ** Here configures some global key bindings
 #+begin_src emacs-lisp :results silent
-(global-set-key (kbd "C-c r") 'font-lock-fontify-buffer)
-(global-set-key (kbd "C-2") 'set-mark-command)
-(global-set-key (kbd "C-c g") 'goto-line)
-(global-set-key (kbd "M-/") 'hippie-expand)
+  (abaw/global-set-key (kbd "C-c r") 'font-lock-fontify-buffer)
+  (abaw/global-set-key (kbd "C-2") 'set-mark-command)
+  (abaw/global-set-key (kbd "C-c g") 'goto-line)
+  (abaw/global-set-key (kbd "M-/") 'hippie-expand)
 #+end_src
 
 ** ido
