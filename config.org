@@ -84,7 +84,6 @@ http://stackoverflow.com/questions/683425/globally-override-key-binding-in-emac.
 
 #+end_src
 
-
 ** dired
 Let dired do some recursive operations
 #+begin_src emacs-lisp :results silent
@@ -214,12 +213,10 @@ But I don't know if this is good enough?? Do I need to set-keyboard-coding-syste
 (load-theme 'zenburn t)
 #+end_src
 
-
 ** color-moccur
 #+begin_src emacs-lisp :results silent
   (el-get 'wait "color-moccur")
 #+end_src
-
 
 ** yasnippet
 Some of my snippets need time-stamp package
@@ -237,6 +234,31 @@ Enable yasnippet
   ;; if we use setq, the default "TAB" key will not be unbind.
   (custom-set-variables '(yas/trigger-key "<C-tab>"))
 #+end_src
+
+** C-./C-, fast jump to temporarily saved place
+These code are modified from someone's .emcas.el.
+#+begin_src emacs-lisp :results silent
+  (defun ska-point-to-register()
+    "Store cursorposition _fast_ in a register.
+  Use ska-jump-to-register to jump back to the stored position."
+    (interactive)
+    (point-to-register 8))
+  
+  (defun ska-jump-to-register()
+    "Switches between current cursorposition and position
+  that was stored with ska-point-to-register."
+    (interactive)
+    (let ((tmp (point-marker)))
+      (jump-to-register 8)
+      (set-register 8 tmp)))
+  
+  (abaw/global-set-key (kbd "C-.") 'ska-point-to-register)
+  (abaw/global-set-key (kbd "C-,") 'ska-jump-to-register)
+  
+#+end_src
+
+
+
 
 * Configuraton for org mode
 Here some org-mode helper functions/commands
