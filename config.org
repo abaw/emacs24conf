@@ -7,24 +7,6 @@ Add additional archives and do (package-initialize)
   (package-initialize)
 #+end_src
 
-Do (package-refresh-contents) if we have never done that yet.
-#+begin_src emacs-lisp :results silent
-  (dolist (archive package-archives)
-    (let* ((dir (expand-file-name "archives" package-user-dir))
-           (dir (expand-file-name (car archive) dir)))
-      (unless (file-directory-p dir)
-        (package-refresh-contents)
-        (return))))
-#+end_src
-
-Provide a convinent function to install packages.
-#+begin_src emacs-lisp :results silent
-  (defun abaw/package-install (package)
-    "install a package using `package-install' if it has not been installed yet."
-    (unless (package-installed-p package)
-      (package-install package)))
-#+end_src
-
 * el-get configuration
 This code is modified from
 emacs-kicker(https://github.com/dimitri/emacs-kicker). It can install
@@ -57,6 +39,20 @@ el-get automatically synchronously if we don't have installed it yet.
     (add-to-list 'el-get-sources
                  '(:name color-moccur :type emacswiki :website "http://www.emacswiki.org/emacs/color-moccur.el" :features "color-moccur"))
 #+end_src
+
+*** ELPA packages
+#+begin_src emacs-lisp :results silent
+  (add-to-list 'el-get-sources '(:name zenburn-theme :type elpa))
+  (let ((elpa-packages '("paredit" "hl-sexp")))
+    (loop for pkg in elpa-packages
+          do (add-to-list 'el-get-sources
+                          (let ((orig-def (el-get-package-def pkg)))
+                            (plist-put
+                             orig-def
+                             :type 'elpa)))))
+  
+#+end_src
+
 
 * Basic Configuration
 ** a minor mode for my global key bindings
@@ -201,7 +197,7 @@ But I don't know if this is good enough?? Do I need to set-keyboard-coding-syste
 
 ** zenburn color theme
 #+begin_src emacs-lisp :results silent
-(abaw/package-install 'zenburn-theme)
+(el-get 'wait "zenburn-theme")
 (load-theme 'zenburn t)
 #+end_src
 
@@ -304,8 +300,7 @@ Here some org-mode helper functions/commands
 ** lisp
 *** turn paredit and hl-sexp for lisp related modes
 #+begin_src emacs-lisp :results silent
-  (abaw/package-install 'paredit)
-  (abaw/package-install 'hl-sexp)
+  (el-get 'wait (list "paredit" "hl-sexp"))
   
   (defun abaw/lisp-hook ()
     (eldoc-mode 1)
