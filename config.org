@@ -90,6 +90,11 @@ Let dired do some recursive operations
 (setq dired-recursive-copies 'top)
 (setq dired-recursive-deletes 'top)
 #+end_src
+use dired+
+#+begin_src emacs-lisp :results silent
+(el-get 'wait "dired+")
+#+end_src
+
 ** show column numbers
 #+begin_src emacs-lisp :results silent
 (column-number-mode 1)
@@ -103,6 +108,12 @@ Let dired do some recursive operations
 ** yes/no => y/n
 #+begin_src emacs-lisp :results silent
 (fset 'yes-or-no-p 'y-or-n-p)
+#+end_src
+
+
+** set default fill-column
+#+begin_src emacs-lisp :results silent
+(set-default 'fill-column 80)
 #+end_src
 
 ** utf-8 environment
@@ -188,25 +199,6 @@ But I don't know if this is good enough?? Do I need to set-keyboard-coding-syste
   ;; (setq ido-default-file-method 'selected-window)
 #+end_src
 
-** turn paredit and hl-sexp for lisp related modes
-#+begin_src emacs-lisp :results silent
-  (abaw/package-install 'paredit)
-  (abaw/package-install 'hl-sexp)
-  
-  (defun abaw/lisp-hook ()
-    (eldoc-mode 1)
-    (hl-sexp-mode 1)
-    (paredit-mode 1))
-  
-  (mapc (lambda (mode-hook)
-          (add-hook mode-hook 'abaw/lisp-hook))
-        '(lisp-mode-hook emacs-lisp-mode-hook ielm-mode-hook))
-  
-  (add-hook 'minibuffer-setup-hook (lambda ()
-                                     (when (eq this-command 'eval-expression)
-                                         (paredit-mode 1))))
-#+end_src
-
 ** zenburn color theme
 #+begin_src emacs-lisp :results silent
 (abaw/package-install 'zenburn-theme)
@@ -259,6 +251,12 @@ These code are modified from someone's .emcas.el.
 
 
 
+** auto-complete
+#+begin_src emacs-lisp :results silent
+  (el-get 'wait "auto-complete")
+  (abaw/global-set-key (kbd "C-`") 'auto-complete)
+  (global-auto-complete-mode)
+#+end_src
 
 * Configuraton for org mode
 Here some org-mode helper functions/commands
@@ -301,6 +299,35 @@ Here some org-mode helper functions/commands
 #+begin_src emacs-lisp :results silent
 (el-get 'wait "magit")
 #+end_src
+
+* Programming languages
+** lisp
+*** turn paredit and hl-sexp for lisp related modes
+#+begin_src emacs-lisp :results silent
+  (abaw/package-install 'paredit)
+  (abaw/package-install 'hl-sexp)
+  
+  (defun abaw/lisp-hook ()
+    (eldoc-mode 1)
+    (hl-sexp-mode 1)
+    (paredit-mode 1))
+  
+  (mapc (lambda (mode-hook)
+          (add-hook mode-hook 'abaw/lisp-hook))
+        '(lisp-mode-hook emacs-lisp-mode-hook ielm-mode-hook))
+  
+  (add-hook 'minibuffer-setup-hook (lambda ()
+                                     (when (eq this-command 'eval-expression)
+                                         (paredit-mode 1))))
+#+end_src
+
+*** emacs lisp
+#+begin_src emacs-lisp :results silent
+  (el-get 'wait "auto-complete-emacs-lisp")
+  (add-to-list 'ac-modes 'inferior-emacs-lisp-mode)
+  (add-hook 'ielm-mode-hook 'ac-emacs-lisp-mode-setup)
+#+end_src
+
 
 
 * Save customization to other place
