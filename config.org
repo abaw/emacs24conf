@@ -327,7 +327,13 @@ Here some org-mode helper functions/commands
 
 * Save customization to other place
 #+begin_src emacs-lisp :results silent
-  (setq custom-file (expand-file-name "custom.el" abaw/top-dir))
-  (when (file-exists-p custom-file)
-    (load-file custom-file))
+  (let* ((host-name (substring (shell-command-to-string "hostname") 0 -1))
+         (host-dir (abaw/join-path abaw/top-dir "hosts" host-name)))
+    (unless (file-directory-p host-dir)
+      (mkdir host-dir)
+      (message "This host does not have directory for customization yet, I created one for you at: %s" host-dir))
+    (setq custom-file (expand-file-name "custom.el" host-dir))
+  
+    (when (file-exists-p custom-file)
+      (load-file custom-file)))
 #+end_src
