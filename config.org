@@ -118,9 +118,11 @@ But I don't know if this is good enough?? Do I need to set-keyboard-coding-syste
 (set-language-environment 'utf-8)
 #+end_src
 
-** show trailing white spaces
+** show trailing white spaces by default and disable it in some modes
 #+begin_src emacs-lisp :results silent
-(setq-default show-trailing-whitespace t)
+  (setq-default show-trailing-whitespace t)
+  (add-hook 'comint-mode-hook
+            (lambda () (setq show-trailing-whitespace nil)))
 #+end_src
 
 ** highlight matching parens
@@ -255,7 +257,7 @@ These code are modified from someone's .emcas.el.
 #+end_src
 
 * Configuraton for org mode
-Here some org-mode helper functions/commands
+** org mode helper functions/commands
 #+begin_src emacs-lisp :results silent
   (defun abaw/org-src-split ()
     "Split an org source block into two blocks at point. If a
@@ -288,6 +290,67 @@ Here some org-mode helper functions/commands
             (split-at-pos (point))))))
   
 #+end_src
+
+** Some basic configurations
+Key bindings for org mode:
+#+begin_src emacs-lisp :results silent
+  (abaw/global-set-key (kbd "<f12>") 'org-agenda)
+  (abaw/global-set-key (kbd "C-S-r") 'org-capture)
+#+end_src
+spell checking in the org buffers
+#+begin_src emacs-lisp :results silent
+  (add-hook 'org-mode-hook
+	    #'(lambda ()
+		(flyspell-mode t)))
+#+end_src
+highligh current line in agenda buffers:
+#+begin_src emacs-lisp :results silent
+  (add-hook 'org-agenda-mode-hook (lambda () (hl-line-mode)))
+#+end_src
+highlights in sparse tree persists after buffer being modified
+#+begin_src emacs-lisp :results silent
+(setq org-remove-highlights-with-change nil)
+#+end_src
+
+** Todo state related configuration
+todo keyword settings
+#+begin_src emacs-lisp :results silent
+  (setq org-todo-keywords
+        '((sequence "MAYBE(m)" "TODO(t)" "STARTED(s)" "WAITING(w)" "POSTPONED(p)" "|" "DONE(d)" "CANCELLED(c)" "DELEGATED(D)" )))
+#+end_src
+todo state trigger
+#+begin_src emacs-lisp :results silent
+(setq org-todo-state-tags-triggers
+	'((done ("DONE" . t) ("STARTED" . t))
+	  ("TODO" ("STARTED"))
+	  ("MAYBE" ("STARTED"))
+	  ("STARTED" ("STARTED" .t))
+	  ("WAITING" ("STARTED" .t))))
+#+end_src
+
+I want to change todo state to STARTED while clocking in a todo entry which is
+not started yet. This could be achieved by using a this hook:
+#+begin_src emacs-lisp :results silent
+  (defun abaw/org-update-state-for-current-clock-entry ()
+    "Updates the todo state to \"STARTED\" if current clock entry
+      is a todo entry and in state \"TODO\" or \"MAYBE\". "
+  
+    (unless (org-clocking-p)
+      (error "not current clocking entry"))
+  
+    (save-excursion
+      (save-window-excursion
+        (org-clock-goto)
+        (let ((state (org-get-todo-state)))
+          (when (and state (member state '("TODO" "MAYBE")))
+            (org-todo "STARTED"))))))
+  
+  (add-hook 'org-clock-in-hook 'abaw/org-update-state-for-current-clock-entry)
+  
+#+end_src
+
+
+
 
 * Configurations for version control systems
 
@@ -325,15 +388,17 @@ Here some org-mode helper functions/commands
 
 
 
-* Save customization to other place
+* Per-host customization
+** additional configuration for this host
 #+begin_src emacs-lisp :results silent
-  (let* ((host-name (substring (shell-command-to-string "hostname") 0 -1))
-         (host-dir (abaw/join-path abaw/top-dir "hosts" host-name)))
-    (unless (file-directory-p host-dir)
-      (mkdir host-dir)
-      (message "This host does not have directory for customization yet, I created one for you at: %s" host-dir))
-    (setq custom-file (expand-file-name "custom.el" host-dir))
-  
-    (when (file-exists-p custom-file)
-      (load-file custom-file)))
+  (let ((per-host-config (abaw/join-path abaw/host-dir "config.org")))
+    (when (file-exists-p per-host-config)
+      (org-babel-load-file per-host-config)))
+#+end_src
+
+** emacs customization file
+#+begin_src emacs-lisp :results silent
+  (setq custom-file (expand-file-name "custom.el" abaw/host-dir))
+  (when (file-exists-p custom-file)
+    (load-file custom-file))
 #+end_src

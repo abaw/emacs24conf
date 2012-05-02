@@ -14,5 +14,14 @@
 (defvar abaw/lisp-dir (file-name-as-directory (concat abaw/top-dir "lisp")))
 (add-to-list 'load-path abaw/lisp-dir)
 
+(defvar abaw/host-dir (abaw/join-path
+		       abaw/top-dir
+		       "hosts"
+		       (substring (shell-command-to-string "hostname") 0 -1)))
+(unless (file-directory-p abaw/host-dir)
+  (mkdir abaw/host-dir)
+  (message "This host does not have directory for customization yet, I created one for you at: %s" abaw/top-dir))
+
+
 ;; FIXME: only tangle and compile file if .org has changed
 (org-babel-load-file (expand-file-name "config.org" abaw/top-dir))
