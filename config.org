@@ -67,6 +67,9 @@ http://stackoverflow.com/questions/683425/globally-override-key-binding-in-emac.
     "A minor mode used to define my global key bindings"
     :global t
     :keymap 'my-global-keys-mode-map)
+
+  (defvar my-global-keys--keymap-alist '(my-global-keys-mode my-global-keys-mode-map))
+  (push 'my-global-keys--keymap-alist emulation-mode-map-alists)
   (my-global-keys-mode 1)
 
   (defun abaw/global-set-key (key command)
