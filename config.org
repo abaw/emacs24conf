@@ -254,6 +254,11 @@ These code are modified from someone's .emcas.el.
   
 #+end_src
 
+** wrap long time
+#+begin_src emacs-lisp :results silent
+(set-default 'truncate-lines nil)
+(setq truncate-partial-width-windows nil)
+#+end_src
 
 ** limit maximum size for comint-mode(e.g. shell-mode)
 #+begin_src emacs-lisp :results silent
