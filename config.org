@@ -255,6 +255,11 @@ These code are modified from someone's .emcas.el.
 #+end_src
 
 
+** limit maximum size for comint-mode(e.g. shell-mode)
+#+begin_src emacs-lisp :results silent
+(add-to-list 'comint-output-filter-functions 'comint-truncate-buffer t)
+(setq comint-buffer-maximum-size 20000)
+#+end_src
 
 ** auto-complete
 #+begin_src emacs-lisp :results silent
