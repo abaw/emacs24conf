@@ -109,6 +109,10 @@ use dired+
 (fset 'yes-or-no-p 'y-or-n-p)
 #+end_src
 
+** better scrolling
+#+begin_src emacs-lisp :results silent
+(setq scroll-margin 3 scroll-conservatively 100)
+#+end_src
 
 ** set default fill-column
 #+begin_src emacs-lisp :results silent
