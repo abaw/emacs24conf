@@ -80,7 +80,6 @@ http://stackoverflow.com/questions/683425/globally-override-key-binding-in-emac.
     (or (vectorp key) (stringp key)
         (signal 'wrong-type-argument (list 'arrayp key)))
     (define-key my-global-keys-mode-map key command))
-
 #+end_src
 
 ** dired
@@ -270,7 +269,13 @@ These code are modified from someone's .emcas.el.
 #+begin_src emacs-lisp :results silent
   (el-get 'wait "auto-complete")
   (abaw/global-set-key (kbd "C-`") 'auto-complete)
-  (global-auto-complete-mode)
+  (setq ac-auto-start nil)
+#+end_src
+
+** store backup file in user-emacs-directory
+#+begin_src emacs-lisp :results silent
+  (setq backup-directory-alist `(("." . ,(abaw/join-path user-emacs-directory "backup"))))
+  
 #+end_src
 
 * Configuraton for org mode
