@@ -278,6 +278,11 @@ These code are modified from someone's .emcas.el.
   
 #+end_src
 
+** winner mode
+#+begin_src emacs-lisp :results silent
+(winner-mode 1)
+#+end_src
+
 * Configuraton for org mode
 ** org mode helper functions/commands
 #+begin_src emacs-lisp :results silent
