@@ -283,6 +283,13 @@ These code are modified from someone's .emcas.el.
 (winner-mode 1)
 #+end_src
 
+** smex mode
+#+begin_src emacs-lisp :results silent
+  (el-get 'wait "smex")
+  (abaw/global-set-key (kbd "M-x") 'smex)
+  (abaw/global-set-key (kbd "C-c M-x") 'execute-extended-command)
+#+end_src
+
 * Configuraton for org mode
 ** org mode helper functions/commands
 #+begin_src emacs-lisp :results silent
@@ -411,6 +418,12 @@ not started yet. This could be achieved by using a this hook:
   (el-get 'wait "auto-complete-emacs-lisp")
   (add-to-list 'ac-modes 'inferior-emacs-lisp-mode)
   (add-hook 'ielm-mode-hook 'ac-emacs-lisp-mode-setup)
+#+end_src
+
+
+** haskell
+#+begin_src emacs-lisp :results silent
+(el-get 'wait "haskell-mode")
 #+end_src
 
 
