@@ -55,6 +55,11 @@ el-get automatically synchronously if we don't have installed it yet.
 
 
 * Basic Configuration
+** enabled advanced features
+#+begin_src emacs-lisp :results silent
+(put 'narrow-to-region 'disabled nil)
+#+end_src
+
 ** a minor mode for my global key bindings
 According to scottfrazer's brilliant idea, we can use a minor mode for
 defining global key bindings to prevent our key bindings overriden by
