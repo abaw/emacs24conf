@@ -18,41 +18,17 @@ el-get automatically synchronously if we don't have installed it yet.
   
   (unless (require 'el-get nil t)
     (with-current-buffer (url-retrieve-synchronously "https://github.com/dimitri/el-get/raw/master/el-get-install.el")
-      (end-of-buffer)
-      (eval-print-last-sexp)))
-  
+      (let (el-get-master-branch)
+        (end-of-buffer)
+        (eval-print-last-sexp))))
 #+end_src
 
 ** Addtional local recipes
-*** I want to get yasnippet from its new github repo:
-#+begin_src emacs-lisp :results silent
-  (add-to-list 'el-get-sources
-               (let ((orig-def (el-get-package-def "yasnippet")))
-                 (plist-put
-                  (plist-put
-                   orig-def
-                   :type 'git)
-                  :url "https://github.com/capitaomorte/yasnippet.git")))
-#+end_src
 *** color-moccur
 #+begin_src emacs-lisp :results silent
     (add-to-list 'el-get-sources
                  '(:name color-moccur :type emacswiki :website "http://www.emacswiki.org/emacs/color-moccur.el" :features "color-moccur"))
 #+end_src
-
-*** ELPA packages
-#+begin_src emacs-lisp :results silent
-  (add-to-list 'el-get-sources '(:name zenburn-theme :type elpa))
-  (let ((elpa-packages '("paredit" "hl-sexp")))
-    (loop for pkg in elpa-packages
-          do (add-to-list 'el-get-sources
-                          (let ((orig-def (el-get-package-def pkg)))
-                            (plist-put
-                             orig-def
-                             :type 'elpa)))))
-  
-#+end_src
-
 
 * Basic Configuration
 ** enabled advanced features
@@ -95,7 +71,7 @@ Let dired do some recursive operations
 #+end_src
 use dired+
 #+begin_src emacs-lisp :results silent
-(el-get 'wait "dired+")
+(el-get 'sync "dired+")
 #+end_src
 
 ** show column numbers
@@ -210,13 +186,14 @@ But I don't know if this is good enough?? Do I need to set-keyboard-coding-syste
 
 ** zenburn color theme
 #+begin_src emacs-lisp :results silent
-(el-get 'wait "zenburn-theme")
-(load-theme 'zenburn t)
+  (el-get 'sync "zenburn-theme")
+  (message "custom-theme-load-path=%s" custom-theme-load-path)
+  (load-theme 'zenburn t)
 #+end_src
 
 ** color-moccur
 #+begin_src emacs-lisp :results silent
-  (el-get 'wait "color-moccur")
+  (el-get 'sync "color-moccur")
 #+end_src
 
 ** yasnippet
@@ -227,7 +204,7 @@ Some of my snippets need time-stamp package
 
 Enable yasnippet
 #+begin_src emacs-lisp :results silent
-  (el-get 'wait "yasnippet")
+  (el-get 'sync "yasnippet")
   (yas/global-mode t)
   (setq yas/snippet-dirs (abaw/join-path abaw/top-dir "snippets"))
   (yas/load-directory yas/snippet-dirs)
@@ -272,8 +249,10 @@ These code are modified from someone's .emcas.el.
 
 ** auto-complete
 #+begin_src emacs-lisp :results silent
-  (el-get 'wait "auto-complete")
+  (el-get 'sync "auto-complete")
   (abaw/global-set-key (kbd "C-`") 'auto-complete)
+  (require 'auto-complete-config)
+  (global-auto-complete-mode 1)
   (setq ac-auto-start nil)
 #+end_src
 
@@ -290,7 +269,7 @@ These code are modified from someone's .emcas.el.
 
 ** smex mode
 #+begin_src emacs-lisp :results silent
-  (el-get 'wait "smex")
+  (el-get 'sync "smex")
   (abaw/global-set-key (kbd "M-x") 'smex)
   (abaw/global-set-key (kbd "C-c M-x") 'execute-extended-command)
 #+end_src
@@ -395,14 +374,14 @@ not started yet. This could be achieved by using a this hook:
 
 ** magit
 #+begin_src emacs-lisp :results silent
-(el-get 'wait "magit")
+(el-get 'sync "magit")
 #+end_src
 
 * Programming languages
 ** lisp
 *** turn paredit and hl-sexp for lisp related modes
 #+begin_src emacs-lisp :results silent
-  (el-get 'wait (list "paredit" "hl-sexp"))
+  (el-get 'sync (list "paredit" "hl-sexp"))
   
   (defun abaw/lisp-hook ()
     (eldoc-mode 1)
@@ -420,15 +399,17 @@ not started yet. This could be achieved by using a this hook:
 
 *** emacs lisp
 #+begin_src emacs-lisp :results silent
-  (el-get 'wait "auto-complete-emacs-lisp")
+  (el-get 'sync "auto-complete-emacs-lisp")
+  (require 'auto-complete-emacs-lisp)
+  (ac-emacs-lisp-init)
   (add-to-list 'ac-modes 'inferior-emacs-lisp-mode)
-  (add-hook 'ielm-mode-hook 'ac-emacs-lisp-mode-setup)
+  (add-hook 'ielm-mode-hook 'ac-emacs-lisp-setup)
 #+end_src
 
 
 ** haskell
 #+begin_src emacs-lisp :results silent
-(el-get 'wait "haskell-mode")
+(el-get 'sync "haskell-mode")
 #+end_src
 
 
