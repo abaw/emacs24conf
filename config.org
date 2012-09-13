@@ -290,6 +290,20 @@ These code are modified from someone's .emcas.el.
 #+end_src
 
 
+** insert/replace a file name at point
+#+begin_src emacs-lisp :results silent
+  (defun abaw/insert-or-replace-filename-at-point ()
+    "The command will insert or replace filename at current point
+  using read-file-name interface"
+    (interactive)
+    (let ((filename-region (bounds-of-thing-at-point 'filename))
+          (filename (read-file-name "File name to insert:")))
+      (when (and filename (not (equal filename "")))
+        (when filename-region
+          (delete-region (car filename-region) (cdr filename-region)))
+        (insert filename))))
+#+end_src
+
 * Configuraton for org mode
 ** org mode helper functions/commands
 #+begin_src emacs-lisp :results silent
