@@ -203,7 +203,7 @@ But I don't know if this is good enough?? Do I need to set-keyboard-coding-syste
 
 ** color-moccur
 #+begin_src emacs-lisp :results silent
-  (el-get 'sync "color-moccur")
+  (el-get 'sync "moccur-edit")
   (require 'moccur-edit)
 #+end_src
 
