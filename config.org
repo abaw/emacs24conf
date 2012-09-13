@@ -185,9 +185,10 @@ But I don't know if this is good enough?? Do I need to set-keyboard-coding-syste
 ** ido
 #+begin_src emacs-lisp :results silent
   (require 'ido)
-  (ido-mode t)
+  (ido-mode t);
   (setq read-file-name-function 'ido-read-file-name)
   (setq ido-enable-flex-matching t)
+  (setq ido-max-directory-size nil)
   
   ;; (setq ido-default-buffer-method 'selected-window)
   ;; (setq ido-default-file-method 'selected-window)
