@@ -273,6 +273,12 @@ These code are modified from someone's .emcas.el.
   (abaw/global-set-key (kbd "M-x") 'smex)
   (abaw/global-set-key (kbd "C-c M-x") 'execute-extended-command)
 #+end_src
+** helm
+#+begin_src emacs-lisp :results silent :tangle no
+  (el-get 'sync "helm")
+  (require 'helm-config)
+#+end_src
+
 
 * Configuraton for org mode
 ** org mode helper functions/commands
@@ -366,6 +372,7 @@ not started yet. This could be achieved by using a this hook:
   (add-hook 'org-clock-in-hook 'abaw/org-update-state-for-current-clock-entry)
   
 #+end_src
+
 
 
 
