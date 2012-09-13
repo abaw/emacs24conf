@@ -24,10 +24,19 @@ el-get automatically synchronously if we don't have installed it yet.
 #+end_src
 
 ** Addtional local recipes
-*** color-moccur
+*** color-moccur and moccur-edit
 #+begin_src emacs-lisp :results silent
-    (add-to-list 'el-get-sources
-                 '(:name color-moccur :type emacswiki :website "http://www.emacswiki.org/emacs/color-moccur.el" :features "color-moccur"))
+  (add-to-list 'el-get-sources
+               '(:name color-moccur
+                       :type emacswiki
+                       :website "http://www.emacswiki.org/emacs/color-moccur.el"
+                       :features "color-moccur"))
+  (add-to-list 'el-get-sources
+               '(:name moccur-edit
+                       :type emacswiki
+                       :website "http://www.emacswiki.org/emacs/moccur-edit.el"
+                       :features "moccur-edit"
+                       :depends color-moccur))
 #+end_src
 
 * Basic Configuration
@@ -194,6 +203,7 @@ But I don't know if this is good enough?? Do I need to set-keyboard-coding-syste
 ** color-moccur
 #+begin_src emacs-lisp :results silent
   (el-get 'sync "color-moccur")
+  (require 'moccur-edit)
 #+end_src
 
 ** yasnippet
