@@ -285,7 +285,7 @@ These code are modified from someone's .emcas.el.
   (abaw/global-set-key (kbd "C-c M-x") 'execute-extended-command)
 #+end_src
 ** helm
-#+begin_src emacs-lisp :results silent :tangle no
+#+begin_src emacs-lisp :results silent
   (el-get 'sync "helm")
   (require 'helm-config)
 #+end_src
