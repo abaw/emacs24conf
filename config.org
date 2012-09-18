@@ -288,6 +288,7 @@ These code are modified from someone's .emcas.el.
 #+begin_src emacs-lisp :results silent
   (el-get 'sync "helm")
   (require 'helm-config)
+  (abaw/global-set-key (kbd "<f5>") 'helm-for-files)
 #+end_src
 
 ** switch window using arrow keys
