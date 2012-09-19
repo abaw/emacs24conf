@@ -467,3 +467,8 @@ not started yet. This could be achieved by using a this hook:
   (when (file-exists-p custom-file)
     (load-file custom-file))
 #+end_src
+* Start emacs server
+#+begin_src emacs-lisp :results silent
+  (server-start)
+  (setenv "EDITOR" "emacsclient")
+#+end_src
