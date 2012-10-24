@@ -18,43 +18,33 @@ el-get automatically synchronously if we don't have installed it yet.
   
   (unless (require 'el-get nil t)
     (with-current-buffer (url-retrieve-synchronously "https://github.com/dimitri/el-get/raw/master/el-get-install.el")
-      (end-of-buffer)
-      (eval-print-last-sexp)))
-  
+      (let (el-get-master-branch)
+        (end-of-buffer)
+        (eval-print-last-sexp))))
 #+end_src
 
 ** Addtional local recipes
-*** I want to get yasnippet from its new github repo:
+*** color-moccur and moccur-edit
 #+begin_src emacs-lisp :results silent
   (add-to-list 'el-get-sources
-               (let ((orig-def (el-get-package-def "yasnippet")))
-                 (plist-put
-                  (plist-put
-                   orig-def
-                   :type 'git)
-                  :url "https://github.com/capitaomorte/yasnippet.git")))
+               '(:name color-moccur
+                       :type emacswiki
+                       :website "http://www.emacswiki.org/emacs/color-moccur.el"
+                       :features "color-moccur"))
+  (add-to-list 'el-get-sources
+               '(:name moccur-edit
+                       :type emacswiki
+                       :website "http://www.emacswiki.org/emacs/moccur-edit.el"
+                       :features "moccur-edit"
+                       :depends color-moccur))
 #+end_src
-*** color-moccur
-#+begin_src emacs-lisp :results silent
-    (add-to-list 'el-get-sources
-                 '(:name color-moccur :type emacswiki :website "http://www.emacswiki.org/emacs/color-moccur.el" :features "color-moccur"))
-#+end_src
-
-*** ELPA packages
-#+begin_src emacs-lisp :results silent
-  (add-to-list 'el-get-sources '(:name zenburn-theme :type elpa))
-  (let ((elpa-packages '("paredit" "hl-sexp")))
-    (loop for pkg in elpa-packages
-          do (add-to-list 'el-get-sources
-                          (let ((orig-def (el-get-package-def pkg)))
-                            (plist-put
-                             orig-def
-                             :type 'elpa)))))
-  
-#+end_src
-
 
 * Basic Configuration
+** enabled advanced features
+#+begin_src emacs-lisp :results silent
+(put 'narrow-to-region 'disabled nil)
+#+end_src
+
 ** a minor mode for my global key bindings
 According to scottfrazer's brilliant idea, we can use a minor mode for
 defining global key bindings to prevent our key bindings overriden by
@@ -67,6 +57,9 @@ http://stackoverflow.com/questions/683425/globally-override-key-binding-in-emac.
     "A minor mode used to define my global key bindings"
     :global t
     :keymap 'my-global-keys-mode-map)
+
+  (defvar my-global-keys--keymap-alist '(my-global-keys-mode my-global-keys-mode-map))
+  (push 'my-global-keys--keymap-alist emulation-mode-map-alists)
   (my-global-keys-mode 1)
 
   (defun abaw/global-set-key (key command)
@@ -77,7 +70,6 @@ http://stackoverflow.com/questions/683425/globally-override-key-binding-in-emac.
     (or (vectorp key) (stringp key)
         (signal 'wrong-type-argument (list 'arrayp key)))
     (define-key my-global-keys-mode-map key command))
-
 #+end_src
 
 ** dired
@@ -88,7 +80,7 @@ Let dired do some recursive operations
 #+end_src
 use dired+
 #+begin_src emacs-lisp :results silent
-(el-get 'wait "dired+")
+(el-get 'sync "dired+")
 #+end_src
 
 ** show column numbers
@@ -106,6 +98,10 @@ use dired+
 (fset 'yes-or-no-p 'y-or-n-p)
 #+end_src
 
+** better scrolling
+#+begin_src emacs-lisp :results silent
+(setq scroll-margin 3 scroll-conservatively 100)
+#+end_src
 
 ** set default fill-column
 #+begin_src emacs-lisp :results silent
@@ -189,9 +185,10 @@ But I don't know if this is good enough?? Do I need to set-keyboard-coding-syste
 ** ido
 #+begin_src emacs-lisp :results silent
   (require 'ido)
-  (ido-mode t)
+  (ido-mode t);
   (setq read-file-name-function 'ido-read-file-name)
   (setq ido-enable-flex-matching t)
+  (setq ido-max-directory-size nil)
   
   ;; (setq ido-default-buffer-method 'selected-window)
   ;; (setq ido-default-file-method 'selected-window)
@@ -199,13 +196,15 @@ But I don't know if this is good enough?? Do I need to set-keyboard-coding-syste
 
 ** zenburn color theme
 #+begin_src emacs-lisp :results silent
-(el-get 'wait "zenburn-theme")
-(load-theme 'zenburn t)
+  (el-get 'sync "zenburn-theme")
+  (message "custom-theme-load-path=%s" custom-theme-load-path)
+  (load-theme 'zenburn t)
 #+end_src
 
 ** color-moccur
 #+begin_src emacs-lisp :results silent
-  (el-get 'wait "color-moccur")
+  (el-get 'sync "moccur-edit")
+  (require 'moccur-edit)
 #+end_src
 
 ** yasnippet
@@ -216,7 +215,7 @@ Some of my snippets need time-stamp package
 
 Enable yasnippet
 #+begin_src emacs-lisp :results silent
-  (el-get 'wait "yasnippet")
+  (el-get 'sync "yasnippet")
   (yas/global-mode t)
   (setq yas/snippet-dirs (abaw/join-path abaw/top-dir "snippets"))
   (yas/load-directory yas/snippet-dirs)
@@ -247,14 +246,71 @@ These code are modified from someone's .emcas.el.
   
 #+end_src
 
+** wrap long time
+#+begin_src emacs-lisp :results silent
+(set-default 'truncate-lines nil)
+(setq truncate-partial-width-windows nil)
+#+end_src
 
+** limit maximum size for comint-mode(e.g. shell-mode)
+#+begin_src emacs-lisp :results silent
+(add-to-list 'comint-output-filter-functions 'comint-truncate-buffer t)
+(setq comint-buffer-maximum-size 20000)
+#+end_src
 
 ** auto-complete
 #+begin_src emacs-lisp :results silent
-  (el-get 'wait "auto-complete")
+  (el-get 'sync "auto-complete")
   (abaw/global-set-key (kbd "C-`") 'auto-complete)
-  (global-auto-complete-mode)
+  (require 'auto-complete-config)
+  (global-auto-complete-mode 1)
+  (setq ac-auto-start nil)
 #+end_src
+
+** store backup file in user-emacs-directory
+#+begin_src emacs-lisp :results silent
+  (setq backup-directory-alist `(("." . ,(abaw/join-path user-emacs-directory "backup"))))
+  
+#+end_src
+
+** winner mode
+#+begin_src emacs-lisp :results silent
+(winner-mode 1)
+#+end_src
+
+** smex mode
+#+begin_src emacs-lisp :results silent
+  (el-get 'sync "smex")
+  (abaw/global-set-key (kbd "M-x") 'smex)
+  (abaw/global-set-key (kbd "C-c M-x") 'execute-extended-command)
+#+end_src
+** helm
+#+begin_src emacs-lisp :results silent
+  (el-get 'sync "helm")
+  (require 'helm-config)
+  (abaw/global-set-key (kbd "<f5>") 'helm-for-files)
+#+end_src
+
+** switch window using arrow keys
+#+begin_src emacs-lisp :results silent
+  (require 'windmove)
+  (windmove-default-keybindings 'super)
+#+end_src
+
+** insert/replace a file name at point
+#+begin_src emacs-lisp :results silent
+  (defun abaw/insert-or-replace-filename-at-point ()
+    "The command will insert or replace filename at current point
+  using read-file-name interface"
+    (interactive)
+    (let ((filename-region (bounds-of-thing-at-point 'filename))
+          (filename (read-file-name "File name to insert:")))
+      (when (and filename (not (equal filename "")))
+        (when filename-region
+          (delete-region (car filename-region) (cdr filename-region)))
+        (insert filename))))
+#+end_src
+
 
 * Configuraton for org mode
 ** org mode helper functions/commands
@@ -352,18 +408,19 @@ not started yet. This could be achieved by using a this hook:
 
 
 
+
 * Configurations for version control systems
 
 ** magit
 #+begin_src emacs-lisp :results silent
-(el-get 'wait "magit")
+(el-get 'sync "magit")
 #+end_src
 
 * Programming languages
 ** lisp
 *** turn paredit and hl-sexp for lisp related modes
 #+begin_src emacs-lisp :results silent
-  (el-get 'wait (list "paredit" "hl-sexp"))
+  (el-get 'sync (list "paredit" "hl-sexp"))
   
   (defun abaw/lisp-hook ()
     (eldoc-mode 1)
@@ -381,9 +438,17 @@ not started yet. This could be achieved by using a this hook:
 
 *** emacs lisp
 #+begin_src emacs-lisp :results silent
-  (el-get 'wait "auto-complete-emacs-lisp")
+  (el-get 'sync "auto-complete-emacs-lisp")
+  (require 'auto-complete-emacs-lisp)
+  (ac-emacs-lisp-init)
   (add-to-list 'ac-modes 'inferior-emacs-lisp-mode)
-  (add-hook 'ielm-mode-hook 'ac-emacs-lisp-mode-setup)
+  (add-hook 'ielm-mode-hook 'ac-emacs-lisp-setup)
+#+end_src
+
+
+** haskell
+#+begin_src emacs-lisp :results silent
+(el-get 'sync "haskell-mode")
 #+end_src
 
 
@@ -401,4 +466,9 @@ not started yet. This could be achieved by using a this hook:
   (setq custom-file (expand-file-name "custom.el" abaw/host-dir))
   (when (file-exists-p custom-file)
     (load-file custom-file))
+#+end_src
+* Start emacs server
+#+begin_src emacs-lisp :results silent
+  (server-start)
+  (setenv "EDITOR" "emacsclient")
 #+end_src
