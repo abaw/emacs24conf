@@ -294,7 +294,10 @@ These code are modified from someone's .emcas.el.
 ** switch window using arrow keys
 #+begin_src emacs-lisp :results silent
   (require 'windmove)
-  (windmove-default-keybindings 'super)
+  (abaw/global-set-key (kbd "C-x <up>") 'windmove-up)
+  (abaw/global-set-key (kbd "C-x <down>") 'windmove-down)
+  (abaw/global-set-key (kbd "C-x <left>") 'windmove-left)
+  (abaw/global-set-key (kbd "C-x <right>") 'windmove-right)
 #+end_src
 
 ** insert/replace a file name at point
