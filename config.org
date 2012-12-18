@@ -445,13 +445,18 @@ not started yet. This could be achieved by using a this hook:
   (add-hook 'ielm-mode-hook 'ac-emacs-lisp-setup)
 #+end_src
 
-
 ** haskell
 #+begin_src emacs-lisp :results silent
 (el-get 'sync "haskell-mode")
 #+end_src
 
 
+** python
+#+begin_src emacs-lisp :results silent
+  (el-get 'sync "python-mode")
+  (require 'python-mode)
+  (set-default 'py-shell-name "ipython")
+#+end_src
 
 * Per-host customization
 ** additional configuration for this host
