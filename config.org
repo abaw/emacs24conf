@@ -416,6 +416,12 @@ not started yet. This could be achieved by using a this hook:
 
 
 * Configurations for version control systems
+** p4
+#+begin_src emacs-lisp :results silent
+  (when (shell-command "which p4")
+    (require 'p4))
+#+end_src
+
 
 ** magit
 #+begin_src emacs-lisp :results silent
