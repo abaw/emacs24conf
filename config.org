@@ -289,6 +289,9 @@ These code are modified from someone's .emcas.el.
   (el-get 'sync "helm")
   (require 'helm-config)
   (abaw/global-set-key (kbd "<f5>") 'helm-for-files)
+  (setq helm-for-files-preferred-list '(helm-c-source-files-in-current-dir
+                                        helm-c-source-buffers-list
+                                        helm-c-source-recentf))
 #+end_src
 
 ** switch window using arrow keys
