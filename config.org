@@ -15,7 +15,7 @@ el-get automatically synchronously if we don't have installed it yet.
 #+begin_src emacs-lisp :results silent
   (setq el-get-dir (file-name-as-directory (locate-user-emacs-file "el-get")))
   (add-to-list 'load-path (abaw/join-path el-get-dir "el-get"))
-  
+
   (unless (require 'el-get nil t)
     (with-current-buffer (url-retrieve-synchronously "https://github.com/dimitri/el-get/raw/master/el-get-install.el")
       (let (el-get-master-branch)
@@ -161,9 +161,9 @@ But I don't know if this is good enough?? Do I need to set-keyboard-coding-syste
       (add-hook 'ibuffer-mode-hook
                 (lambda ()
                   (ibuffer-switch-to-saved-filter-groups "default")))
-  
-  
-  
+
+
+
 #+end_src
 
 ** I want more spaces
@@ -189,7 +189,7 @@ But I don't know if this is good enough?? Do I need to set-keyboard-coding-syste
   (setq read-file-name-function 'ido-read-file-name)
   (setq ido-enable-flex-matching t)
   (setq ido-max-directory-size nil)
-  
+
   ;; (setq ido-default-buffer-method 'selected-window)
   ;; (setq ido-default-file-method 'selected-window)
 #+end_src
@@ -219,7 +219,7 @@ Enable yasnippet
   (yas/global-mode t)
   (setq yas/snippet-dirs (abaw/join-path abaw/top-dir "snippets"))
   (yas/load-directory yas/snippet-dirs)
-  
+
   ;; if we use setq, the default "TAB" key will not be unbind.
   (custom-set-variables '(yas/trigger-key "<C-tab>"))
 #+end_src
@@ -232,7 +232,7 @@ These code are modified from someone's .emcas.el.
   Use ska-jump-to-register to jump back to the stored position."
     (interactive)
     (point-to-register 8))
-  
+
   (defun ska-jump-to-register()
     "Switches between current cursorposition and position
   that was stored with ska-point-to-register."
@@ -240,10 +240,10 @@ These code are modified from someone's .emcas.el.
     (let ((tmp (point-marker)))
       (jump-to-register 8)
       (set-register 8 tmp)))
-  
+
   (abaw/global-set-key (kbd "C-.") 'ska-point-to-register)
   (abaw/global-set-key (kbd "C-,") 'ska-jump-to-register)
-  
+
 #+end_src
 
 ** wrap long time
@@ -270,7 +270,7 @@ These code are modified from someone's .emcas.el.
 ** store backup file in user-emacs-directory
 #+begin_src emacs-lisp :results silent
   (setq backup-directory-alist `(("." . ,(abaw/join-path user-emacs-directory "backup"))))
-  
+
 #+end_src
 
 ** winner mode
@@ -330,17 +330,17 @@ These code are modified from someone's .emcas.el.
           headline)
       (unless head
         (error "Point is not inside a source block"))
-  
+
       (setq headline (save-excursion
                        (goto-char head)
                        (end-of-line)
                        (buffer-substring-no-properties head (point))))
-  
+
       (flet ((split-at-pos (pos)
                            (goto-char pos)
                            (beginning-of-line)
                            (insert (format "#+end_src\n%s\n" headline))))
-  
+
         (if (region-active-p)
             (progn
               (split-at-pos (save-excursion
@@ -350,7 +350,7 @@ These code are modified from someone's .emcas.el.
                                 (1+ (line-end-position)))))
               (split-at-pos (region-beginning)))
             (split-at-pos (point))))))
-  
+
 #+end_src
 
 ** Some basic configurations
@@ -396,19 +396,19 @@ not started yet. This could be achieved by using a this hook:
   (defun abaw/org-update-state-for-current-clock-entry ()
     "Updates the todo state to \"STARTED\" if current clock entry
       is a todo entry and in state \"TODO\" or \"MAYBE\". "
-  
+
     (unless (org-clocking-p)
       (error "not current clocking entry"))
-  
+
     (save-excursion
       (save-window-excursion
         (org-clock-goto)
         (let ((state (org-get-todo-state)))
           (when (and state (member state '("TODO" "MAYBE")))
             (org-todo "STARTED"))))))
-  
+
   (add-hook 'org-clock-in-hook 'abaw/org-update-state-for-current-clock-entry)
-  
+
 #+end_src
 
 
@@ -433,16 +433,16 @@ not started yet. This could be achieved by using a this hook:
 *** turn paredit and hl-sexp for lisp related modes
 #+begin_src emacs-lisp :results silent
   (el-get 'sync (list "paredit" "hl-sexp"))
-  
+
   (defun abaw/lisp-hook ()
     (eldoc-mode 1)
     (hl-sexp-mode 1)
     (paredit-mode 1))
-  
+
   (mapc (lambda (mode-hook)
           (add-hook mode-hook 'abaw/lisp-hook))
         '(lisp-mode-hook emacs-lisp-mode-hook ielm-mode-hook))
-  
+
   (add-hook 'minibuffer-setup-hook (lambda ()
                                      (when (eq this-command 'eval-expression)
                                          (paredit-mode 1))))
