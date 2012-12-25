@@ -423,10 +423,27 @@ not started yet. This could be achieved by using a this hook:
 #+end_src
 
 
-** magit
+** git
 #+begin_src emacs-lisp :results silent
 (el-get 'sync "magit")
 #+end_src
+*** run magit-status in fullscreen and restore window configuration afterwards. This is copied from "what the emacs.d!?" site.
+#+begin_src emacs-lisp :results silent
+(require 'magit)
+(defadvice magit-status (around magit-fullscreen activate)
+  (window-configuration-to-register :magit-fullscreen)
+  ad-do-it
+  (delete-other-windows))
+
+(defun magit-quit-session ()
+  "Restores the previous window configuration and kills the magit buffer"
+  (interactive)
+  (kill-buffer)
+  (jump-to-register :magit-fullscreen))
+
+(define-key magit-status-mode-map (kbd "q") 'magit-quit-session)
+#+end_src
+
 
 * Programming languages
 ** lisp
