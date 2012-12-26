@@ -297,10 +297,17 @@ These code are modified from someone's .emcas.el.
 ** switch window using arrow keys
 #+begin_src emacs-lisp :results silent
   (require 'windmove)
-  (abaw/global-set-key (kbd "C-x <up>") 'windmove-up)
-  (abaw/global-set-key (kbd "C-x <down>") 'windmove-down)
-  (abaw/global-set-key (kbd "C-x <left>") 'windmove-left)
-  (abaw/global-set-key (kbd "C-x <right>") 'windmove-right)
+
+  (defun abaw/windmove ()
+    "Select window using arrow keys."
+    (interactive)
+    (loop for ev = last-input-event then (read-event)
+          if (memq ev '(up down left right))
+          do (ignore-errors (windmove-do-window-select ev))
+          else return nil))
+
+  (dolist (arrow '(up down left right))
+    (abaw/global-set-key (read-kbd-macro (format "C-x <%s>" arrow)) 'abaw/windmove))
 #+end_src
 
 ** insert/replace a file name at point
@@ -315,6 +322,14 @@ These code are modified from someone's .emcas.el.
         (when filename-region
           (delete-region (car filename-region) (cdr filename-region)))
         (insert filename))))
+#+end_src
+
+** multiple cursors
+#+begin_src emacs-lisp :results silent
+  (el-get 'multiple-cursors)
+  (abaw/global-set-key (kbd "C->") 'mc/mark-next-like-this)
+  (abaw/global-set-key (kbd "C-<") 'mc/mark-prev-like-this)
+  (abaw/global-set-key (kbd "C-c C->") 'mc/mark-all-like-this)
 #+end_src
 
 
