@@ -297,17 +297,23 @@ These code are modified from someone's .emcas.el.
 ** switch window using arrow keys
 #+begin_src emacs-lisp :results silent
   (require 'windmove)
-
+  
   (defun abaw/windmove ()
     "Select window using arrow keys."
     (interactive)
-    (loop for ev = last-input-event then (read-event)
-          if (memq ev '(up down left right))
-          do (ignore-errors (windmove-do-window-select ev))
-          else return nil))
-
+    (loop for ev = (let ((v (this-command-keys-vector)))
+                     (vector (elt v (1- (length v)))))
+          then (read-key-sequence-vector "Select window using arrow keys:")
+          with arrow-evs = (mapcar 'vector '(up down left right))
+          do (message "ev:%s" ev)
+          if (member ev arrow-evs)
+          do (ignore-errors (windmove-do-window-select (elt ev 0)))
+          else return (setq unread-command-events
+                        (append (listify-key-sequence ev) unread-command-events))))
+  
   (dolist (arrow '(up down left right))
     (abaw/global-set-key (read-kbd-macro (format "C-x <%s>" arrow)) 'abaw/windmove))
+  
 #+end_src
 
 ** insert/replace a file name at point
