@@ -338,6 +338,14 @@ These code are modified from someone's .emcas.el.
   (abaw/global-set-key (kbd "C-c C->") 'mc/mark-all-like-this)
 #+end_src
 
+** dired with less information
+#+begin_src emacs-lisp :results silent
+  ;; Got this from "What the emacs.d!?" site
+  (el-get 'sync "dired-details")
+  (setq-default dired-details-hidden-string "--- ")
+  (dired-details-install)
+#+end_src
+
 
 * Configuraton for org mode
 ** org mode helper functions/commands
