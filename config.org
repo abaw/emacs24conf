@@ -297,7 +297,7 @@ These code are modified from someone's .emcas.el.
 ** switch window using arrow keys
 #+begin_src emacs-lisp :results silent
   (require 'windmove)
-  
+
   (defun abaw/windmove ()
     "Select window using arrow keys."
     (interactive)
@@ -310,10 +310,10 @@ These code are modified from someone's .emcas.el.
           do (ignore-errors (windmove-do-window-select (elt ev 0)))
           else return (setq unread-command-events
                         (append (listify-key-sequence ev) unread-command-events))))
-  
+
   (dolist (arrow '(up down left right))
     (abaw/global-set-key (read-kbd-macro (format "C-x <%s>" arrow)) 'abaw/windmove))
-  
+
 #+end_src
 
 ** insert/replace a file name at point
@@ -344,6 +344,25 @@ These code are modified from someone's .emcas.el.
   (el-get 'sync "dired-details")
   (setq-default dired-details-hidden-string "--- ")
   (dired-details-install)
+#+end_src
+
+** keyboard translation for terminals
+#+begin_src emacs-lisp :results silent
+  (defun abaw/config-terminal-input-decode-map (frame)
+    (unless (display-graphic-p frame)
+      (macrolet ((translate (from to)
+                          `(define-key input-decode-map (kbd ,from) (kbd ,to))))
+
+        (with-selected-frame frame
+          (translate "ESC M-O A" "M-<up>")
+          (translate "ESC M-O B" "M-<down>")
+          (translate "ESC M-O D" "M-<left>")
+          (translate "ESC M-O C" "M-<right>")
+          (translate "M-[ 5 D" "C-<left>")
+          (translate "M-[ 5 C" "C-<right>")))))
+
+  (add-hook 'after-make-frame-functions 'abaw/config-terminal-input-decode-map)
+
 #+end_src
 
 
