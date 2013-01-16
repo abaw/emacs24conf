@@ -334,7 +334,7 @@ These code are modified from someone's .emcas.el.
 #+begin_src emacs-lisp :results silent
   (el-get 'multiple-cursors)
   (abaw/global-set-key (kbd "C->") 'mc/mark-next-like-this)
-  (abaw/global-set-key (kbd "C-<") 'mc/mark-prev-like-this)
+  (abaw/global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
   (abaw/global-set-key (kbd "C-c C->") 'mc/mark-all-like-this)
 #+end_src
 
