@@ -15,7 +15,7 @@ el-get automatically synchronously if we don't have installed it yet.
 #+begin_src emacs-lisp :results silent
   (setq el-get-dir (file-name-as-directory (locate-user-emacs-file "el-get")))
   (add-to-list 'load-path (abaw/join-path el-get-dir "el-get"))
-  
+
   (unless (require 'el-get nil t)
     (with-current-buffer (url-retrieve-synchronously "https://github.com/dimitri/el-get/raw/master/el-get-install.el")
       (let (el-get-master-branch)
@@ -161,9 +161,9 @@ But I don't know if this is good enough?? Do I need to set-keyboard-coding-syste
       (add-hook 'ibuffer-mode-hook
                 (lambda ()
                   (ibuffer-switch-to-saved-filter-groups "default")))
-  
-  
-  
+
+
+
 #+end_src
 
 ** I want more spaces
@@ -189,7 +189,7 @@ But I don't know if this is good enough?? Do I need to set-keyboard-coding-syste
   (setq read-file-name-function 'ido-read-file-name)
   (setq ido-enable-flex-matching t)
   (setq ido-max-directory-size nil)
-  
+
   ;; (setq ido-default-buffer-method 'selected-window)
   ;; (setq ido-default-file-method 'selected-window)
 #+end_src
@@ -219,7 +219,7 @@ Enable yasnippet
   (yas/global-mode t)
   (setq yas/snippet-dirs (abaw/join-path abaw/top-dir "snippets"))
   (yas/load-directory yas/snippet-dirs)
-  
+
   ;; if we use setq, the default "TAB" key will not be unbind.
   (custom-set-variables '(yas/trigger-key "<C-tab>"))
 #+end_src
@@ -232,7 +232,7 @@ These code are modified from someone's .emcas.el.
   Use ska-jump-to-register to jump back to the stored position."
     (interactive)
     (point-to-register 8))
-  
+
   (defun ska-jump-to-register()
     "Switches between current cursorposition and position
   that was stored with ska-point-to-register."
@@ -240,10 +240,10 @@ These code are modified from someone's .emcas.el.
     (let ((tmp (point-marker)))
       (jump-to-register 8)
       (set-register 8 tmp)))
-  
+
   (abaw/global-set-key (kbd "C-.") 'ska-point-to-register)
   (abaw/global-set-key (kbd "C-,") 'ska-jump-to-register)
-  
+
 #+end_src
 
 ** wrap long time
@@ -270,7 +270,7 @@ These code are modified from someone's .emcas.el.
 ** store backup file in user-emacs-directory
 #+begin_src emacs-lisp :results silent
   (setq backup-directory-alist `(("." . ,(abaw/join-path user-emacs-directory "backup"))))
-  
+
 #+end_src
 
 ** winner mode
@@ -289,12 +289,31 @@ These code are modified from someone's .emcas.el.
   (el-get 'sync "helm")
   (require 'helm-config)
   (abaw/global-set-key (kbd "<f5>") 'helm-for-files)
+  (setq helm-for-files-preferred-list '(helm-c-source-files-in-current-dir
+                                        helm-c-source-buffers-list
+                                        helm-c-source-recentf))
 #+end_src
 
 ** switch window using arrow keys
 #+begin_src emacs-lisp :results silent
   (require 'windmove)
-  (windmove-default-keybindings 'super)
+
+  (defun abaw/windmove ()
+    "Select window using arrow keys."
+    (interactive)
+    (loop for ev = (let ((v (this-command-keys-vector)))
+                     (vector (elt v (1- (length v)))))
+          then (read-key-sequence-vector "Select window using arrow keys:")
+          with arrow-evs = (mapcar 'vector '(up down left right))
+          do (message "ev:%s" ev)
+          if (member ev arrow-evs)
+          do (ignore-errors (windmove-do-window-select (elt ev 0)))
+          else return (setq unread-command-events
+                        (append (listify-key-sequence ev) unread-command-events))))
+
+  (dolist (arrow '(up down left right))
+    (abaw/global-set-key (read-kbd-macro (format "C-x <%s>" arrow)) 'abaw/windmove))
+
 #+end_src
 
 ** insert/replace a file name at point
@@ -311,6 +330,41 @@ These code are modified from someone's .emcas.el.
         (insert filename))))
 #+end_src
 
+** multiple cursors
+#+begin_src emacs-lisp :results silent
+  (el-get 'multiple-cursors)
+  (abaw/global-set-key (kbd "C->") 'mc/mark-next-like-this)
+  (abaw/global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+  (abaw/global-set-key (kbd "C-c C->") 'mc/mark-all-like-this)
+#+end_src
+
+** dired with less information
+#+begin_src emacs-lisp :results silent
+  ;; Got this from "What the emacs.d!?" site
+  (el-get 'sync "dired-details")
+  (setq-default dired-details-hidden-string "--- ")
+  (dired-details-install)
+#+end_src
+
+** keyboard translation for terminals
+#+begin_src emacs-lisp :results silent
+  (defun abaw/config-terminal-input-decode-map (frame)
+    (unless (display-graphic-p frame)
+      (macrolet ((translate (from to)
+                          `(define-key input-decode-map (kbd ,from) (kbd ,to))))
+
+        (with-selected-frame frame
+          (translate "ESC M-O A" "M-<up>")
+          (translate "ESC M-O B" "M-<down>")
+          (translate "ESC M-O D" "M-<left>")
+          (translate "ESC M-O C" "M-<right>")
+          (translate "M-[ 5 D" "C-<left>")
+          (translate "M-[ 5 C" "C-<right>")))))
+
+  (add-hook 'after-make-frame-functions 'abaw/config-terminal-input-decode-map)
+
+#+end_src
+
 
 * Configuraton for org mode
 ** org mode helper functions/commands
@@ -324,17 +378,17 @@ These code are modified from someone's .emcas.el.
           headline)
       (unless head
         (error "Point is not inside a source block"))
-  
+
       (setq headline (save-excursion
                        (goto-char head)
                        (end-of-line)
                        (buffer-substring-no-properties head (point))))
-  
+
       (flet ((split-at-pos (pos)
                            (goto-char pos)
                            (beginning-of-line)
                            (insert (format "#+end_src\n%s\n" headline))))
-  
+
         (if (region-active-p)
             (progn
               (split-at-pos (save-excursion
@@ -344,7 +398,7 @@ These code are modified from someone's .emcas.el.
                                 (1+ (line-end-position)))))
               (split-at-pos (region-beginning)))
             (split-at-pos (point))))))
-  
+
 #+end_src
 
 ** Some basic configurations
@@ -390,19 +444,19 @@ not started yet. This could be achieved by using a this hook:
   (defun abaw/org-update-state-for-current-clock-entry ()
     "Updates the todo state to \"STARTED\" if current clock entry
       is a todo entry and in state \"TODO\" or \"MAYBE\". "
-  
+
     (unless (org-clocking-p)
       (error "not current clocking entry"))
-  
+
     (save-excursion
       (save-window-excursion
         (org-clock-goto)
         (let ((state (org-get-todo-state)))
           (when (and state (member state '("TODO" "MAYBE")))
             (org-todo "STARTED"))))))
-  
+
   (add-hook 'org-clock-in-hook 'abaw/org-update-state-for-current-clock-entry)
-  
+
 #+end_src
 
 
@@ -410,27 +464,50 @@ not started yet. This could be achieved by using a this hook:
 
 
 * Configurations for version control systems
+** p4
+#+begin_src emacs-lisp :results silent
+  (when (shell-command "which p4")
+    (require 'p4))
+#+end_src
 
-** magit
+
+** git
 #+begin_src emacs-lisp :results silent
 (el-get 'sync "magit")
 #+end_src
+*** run magit-status in fullscreen and restore window configuration afterwards. This is copied from "what the emacs.d!?" site.
+#+begin_src emacs-lisp :results silent
+(require 'magit)
+(defadvice magit-status (around magit-fullscreen activate)
+  (window-configuration-to-register :magit-fullscreen)
+  ad-do-it
+  (delete-other-windows))
+
+(defun magit-quit-session ()
+  "Restores the previous window configuration and kills the magit buffer"
+  (interactive)
+  (kill-buffer)
+  (jump-to-register :magit-fullscreen))
+
+(define-key magit-status-mode-map (kbd "q") 'magit-quit-session)
+#+end_src
+
 
 * Programming languages
 ** lisp
 *** turn paredit and hl-sexp for lisp related modes
 #+begin_src emacs-lisp :results silent
   (el-get 'sync (list "paredit" "hl-sexp"))
-  
+
   (defun abaw/lisp-hook ()
     (eldoc-mode 1)
     (hl-sexp-mode 1)
     (paredit-mode 1))
-  
+
   (mapc (lambda (mode-hook)
           (add-hook mode-hook 'abaw/lisp-hook))
         '(lisp-mode-hook emacs-lisp-mode-hook ielm-mode-hook))
-  
+
   (add-hook 'minibuffer-setup-hook (lambda ()
                                      (when (eq this-command 'eval-expression)
                                          (paredit-mode 1))))
@@ -445,13 +522,18 @@ not started yet. This could be achieved by using a this hook:
   (add-hook 'ielm-mode-hook 'ac-emacs-lisp-setup)
 #+end_src
 
-
 ** haskell
 #+begin_src emacs-lisp :results silent
 (el-get 'sync "haskell-mode")
 #+end_src
 
 
+** python
+#+begin_src emacs-lisp :results silent
+  (el-get 'sync "python-mode")
+  (require 'python-mode)
+  (set-default 'py-shell-name "ipython")
+#+end_src
 
 * Per-host customization
 ** additional configuration for this host
