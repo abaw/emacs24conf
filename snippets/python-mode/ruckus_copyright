@@ -2,7 +2,7 @@
 # name: to insert Ruckus copyright
 # key: copyright
 # --
-# Copyright 2013 Ruckus Wireless, Inc. All rights reserved.
+# Copyright `(format-time-string "%Y")` Ruckus Wireless, Inc. All rights reserved.
 #
 # RUCKUS WIRELESS, INC. CONFIDENTIAL - This is an unpublished, proprietary work
 # of Ruckus Wireless, Inc., and is fully protected under copyright and trade
