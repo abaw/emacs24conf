@@ -1,11 +1,1 @@
-# -*- mode: snippet -*-
-# name: to insert Ruckus copyright
-# key: copyright
-# --
-# Copyright `(format-time-string "%Y")` Ruckus Wireless, Inc. All rights reserved.
-#
-# RUCKUS WIRELESS, INC. CONFIDENTIAL - This is an unpublished, proprietary work
-# of Ruckus Wireless, Inc., and is fully protected under copyright and trade
-# secret laws. You may not view, use, disclose, copy, or distribute this file or
-# any information contained herein except pursuant to a valid license from
-# Ruckus.
+../python-mode/ruckus_copyright
