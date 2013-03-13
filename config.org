@@ -365,6 +365,11 @@ These code are modified from someone's .emcas.el.
 
 #+end_src
 
+** markdown mode
+#+begin_src emacs-lisp :results silent
+  (el-get 'sync "markdown-mode")
+#+end_src
+
 
 * Configuraton for org mode
 ** org mode helper functions/commands
