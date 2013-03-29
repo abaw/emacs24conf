@@ -332,7 +332,7 @@ These code are modified from someone's .emcas.el.
 
 ** multiple cursors
 #+begin_src emacs-lisp :results silent
-  (el-get 'multiple-cursors)
+  (el-get 'sync "multiple-cursors")
   (abaw/global-set-key (kbd "C->") 'mc/mark-next-like-this)
   (abaw/global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
   (abaw/global-set-key (kbd "C-c C->") 'mc/mark-all-like-this)
