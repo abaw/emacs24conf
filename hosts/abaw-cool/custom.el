@@ -5,6 +5,8 @@
  ;; If there is more than one, they won't work right.
  '(markdown-command "pandoc -f markdown -t html -s")
  '(markdown-command-needs-filename nil)
+ '(p4-auto-refresh nil)
+ '(p4-file-refresh-timer-time 0)
  '(yas-trigger-key "<C-tab>"))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
