@@ -1,0 +1,6 @@
+** lilypond
+#+begin_src emacs-lisp :results silent
+  (add-to-list 'load-path "/Applications/LilyPond.app/Contents/Resources/share/emacs/site-lisp")
+  (setq LilyPond-lilypond-command "/Applications/LilyPond.app/Contents/Resources/bin/lilypond")
+  (require 'lilypond-mode)
+#+end_src

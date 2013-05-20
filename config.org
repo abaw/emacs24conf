@@ -348,7 +348,7 @@ These code are modified from someone's .emcas.el.
 
 ** multiple cursors
 #+begin_src emacs-lisp :results silent
-  (el-get 'multiple-cursors)
+  (el-get 'sync "multiple-cursors")
   (abaw/global-set-key (kbd "C->") 'mc/mark-next-like-this)
   (abaw/global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
   (abaw/global-set-key (kbd "C-c C->") 'mc/mark-all-like-this)
@@ -572,6 +572,10 @@ not started yet. This could be achieved by using a this hook:
 #+end_src
 * Start emacs server
 #+begin_src emacs-lisp :results silent
+  (when (eq window-system 'w32)
+    (defadvice server-ensure-safe-dir (around always-safe-dir-on-windows activate)
+      "We don't check the directory for the emacs server on Windows."
+      t))
   (server-start)
   (setenv "EDITOR" "emacsclient")
 #+end_src

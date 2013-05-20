@@ -1,4 +1,5 @@
 (require 'cl)
+(require 'org)
 
 (defun abaw/join-path (&rest components)
   "Join path components into a path and return it. For
