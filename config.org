@@ -39,6 +39,21 @@ el-get automatically synchronously if we don't have installed it yet.
                        :website "http://www.emacswiki.org/emacs/moccur-edit.el"
                        :features "moccur-edit"
                        :depends color-moccur))
+  (add-to-list 'el-get-sources
+               '(:name python-mode
+                       :type github
+                       :pkgname "abaw/python-mode"
+                       :description "Major mode for editing Python programs"
+                       :features (python-mode doctest-mode)
+                       :compile nil
+                       :load "test/doctest-mode.el"
+                       :prepare (progn
+                                  (autoload 'python-mode "python-mode"
+                                    "Python editing mode." t)
+                                  (add-to-list 'auto-mode-alist
+                                               '("\\.py$" . python-mode))
+                                  (add-to-list 'interpreter-mode-alist
+                                               '("python" . python-mode)))))
 #+end_src
 
 * Basic Configuration
@@ -556,6 +571,7 @@ not started yet. This could be achieved by using a this hook:
   (el-get 'sync "python-mode")
   (require 'python-mode)
   (set-default 'py-shell-name "ipython")
+  (setq py-no-completion-calls-dabbrev-expand-p nil)
 #+end_src
 
 * Per-host customization
