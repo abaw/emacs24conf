@@ -62,7 +62,7 @@ el-get automatically synchronously if we don't have installed it yet.
 (put 'narrow-to-region 'disabled nil)
 #+end_src
 
-** ad-hoc defining command to run when a file is save
+** a command to ad-hoc define command to run when a file is save
 #+begin_src emacs-lisp :results silent
   (defun abaw/add-after-save-hook (exp)
     "Register a sexp to run after saving current buffer. It will
@@ -74,7 +74,29 @@ el-get automatically synchronously if we don't have installed it yet.
                                              'read-expression-history)))
     (eval exp)
     (add-to-list 'after-save-hook (eval `(lambda () "ad-hoc defined function in `abaw/add-after-save-hook'" ,exp))))
-  
+
+#+end_src
+
+** a command to ssh to remote machine
+#+begin_src emacs-lisp :results silent
+  (defun abaw/ssh (remote &optional user)
+    "Run an inferior shell on a remote host through TRAMP(i.e. ssh)."
+    (interactive (list (read-from-minibuffer "Remote Host: ")
+                       (and current-prefix-arg
+                           (read-from-minibuffer "User: "))))
+    (when (equal (string-strip remote) "")
+      (error "We need a valid host name to start"))
+
+    (when (and user (equal (string-strip user) ""))
+      (setq user nil))
+
+    (let ((default-directory (format "/sshx:%s%s:/"
+                                     (if user
+                                         (format "%s@" user)
+                                       "") remote))
+          (buffer-name (read-from-minibuffer "Buffer Name: " (format "*%s*" remote))))
+      (shell buffer-name)))
+
 #+end_src
 
 
