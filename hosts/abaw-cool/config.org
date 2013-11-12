@@ -1,0 +1,8 @@
+
+* org-mode configuration
+#+begin_src emacs-lisp :results silent
+  (setq org-directory "~/orgs")
+  (setq org-mobile-directory "~/Dropbox/MobileOrg/")
+  (setq org-mobile-inbox-for-pull "~/orgs/from-mobile.org")
+  (setq org-mobile-files '("~/orgs/notes.org"))
+#+end_src
