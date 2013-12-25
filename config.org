@@ -15,6 +15,8 @@ emacs-kicker(https://github.com/dimitri/emacs-kicker). It can install
 el-get automatically synchronously if we don't have installed it yet.
 
 #+begin_src emacs-lisp :results silent
+  (setq el-get-git-install-url "https://github.com/dimitri/el-get.git")
+  (setq el-get-github-default-url-type "https")
   (setq el-get-dir (file-name-as-directory (locate-user-emacs-file "el-get")))
   (add-to-list 'load-path (abaw/join-path el-get-dir "el-get"))
 
