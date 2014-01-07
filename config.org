@@ -129,7 +129,7 @@ http://stackoverflow.com/questions/683425/globally-override-key-binding-in-emac.
 #+end_src
 
 ** recentf-mode
-<#+begin_src emacs-lisp :results silent
+#+begin_src emacs-lisp :results silent
 (recentf-mode)
 #+end_src
 
