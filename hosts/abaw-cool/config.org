@@ -1,8 +1,56 @@
-
 * org-mode configuration
 #+begin_src emacs-lisp :results silent
   (setq org-directory "~/orgs")
   (setq org-mobile-directory "~/Dropbox/MobileOrg/")
-  (setq org-mobile-inbox-for-pull "~/orgs/from-mobile.org")
-  (setq org-mobile-files '("~/orgs/notes.org"))
+  (setq org-mobile-inbox-for-pull "from-mobile.org")
+  (setq org-mobile-files '("notes.org"))
+  (setq org-default-notes-file (abaw/join-path org-directory "notes.org"))
+  (setq org-agenda-files (mapcar (lambda (f) (abaw/join-path org-directory f))
+                                 '("todo.org" "project.org" "perforce.org" "diary.org" "refile.org")))
+
+  (setq org-capture-templates
+        '(("t" "Tasks" entry (file "refile.org") "* TODO %?\n:PROPERTIES:\n:ADDED: %U\n:END:\n" :clock-in t :clock-resume t)
+          ("j" "Journal" entry (file+datetree "diary.org") "* %?\n%U" :clock-in t :clock-resume t)
+          ("n" "Note" entry (file "refile.org") "* %? :NOTE:\n%U\n%a\n")))
+
+  (setq org-agenda-custom-commands
+        '((" " "Agenda"
+           ((agenda "" nil)
+            (tags "REFILE"
+                  ((org-agenda-overriding-header "Tasks to Refile")
+                   (org-tags-match-list-sublevels nil)))
+
+            (tags-todo "-CANCELLED/!"
+                       ((org-agenda-overriding-header "Stuck Projects")
+                        (org-agenda-skip-function 'bh/skip-non-stuck-projects)
+                        (org-agenda-sorting-strategy
+                         '(priority-down category-keep))))
+            (tags-todo "-HOLD-CANCELLED/!"
+                       ((org-agenda-overriding-header "Projects")
+                        (org-agenda-skip-function 'bh/skip-non-projects)
+                        (org-agenda-sorting-strategy
+                         '(priority-down category-keep))))
+            (tags-todo "-CANCELLED/!NEXT"
+                       ((org-agenda-overriding-header "Project Next Tasks")
+                        (org-agenda-skip-function 'bh/skip-projects-and-habits-and-single-tasks)
+                        (org-tags-match-list-sublevels t)
+                        (org-agenda-todo-ignore-scheduled bh/hide-scheduled-and-waiting-next-tasks)
+                        (org-agenda-todo-ignore-deadlines bh/hide-scheduled-and-waiting-next-tasks)
+                        (org-agenda-todo-ignore-with-date bh/hide-scheduled-and-waiting-next-tasks)
+                        (org-agenda-sorting-strategy
+                         '(priority-down todo-state-down effort-up category-keep))))
+            (tags-todo "-REFILE-CANCELLED-WAITING/!"
+                       ((org-agenda-overriding-header (if (marker-buffer org-agenda-restrict-begin) "Project Subtasks" "Standalone Tasks"))
+                        (org-agenda-skip-function 'bh/skip-project-tasks-maybe)
+                        (org-agenda-todo-ignore-scheduled bh/hide-scheduled-and-waiting-next-tasks)
+                        (org-agenda-todo-ignore-deadlines bh/hide-scheduled-and-waiting-next-tasks)
+                        (org-agenda-todo-ignore-with-date bh/hide-scheduled-and-waiting-next-tasks)
+                        (org-agenda-sorting-strategy
+                         '(category-keep))))
+            (tags-todo "-CANCELLED+WAITING/!"
+                       ((org-agenda-overriding-header "Waiting and Postponed Tasks")
+                        (org-agenda-skip-function 'bh/skip-stuck-projects)
+                        (org-tags-match-list-sublevels nil)
+                        (org-agenda-todo-ignore-scheduled 'future)
+                        (org-agenda-todo-ignore-deadlines 'future)))))))
 #+end_src
