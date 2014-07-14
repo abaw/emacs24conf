@@ -250,7 +250,7 @@ But I don't know if this is good enough?? Do I need to set-keyboard-coding-syste
   (ido-everywhere)
   (setq read-file-name-function 'ido-read-file-name)
   (setq ido-enable-flex-matching t)
-  (setq ido-max-directory-size 10000)
+  (setq ido-max-directory-size 100000)
 
   ;; (setq ido-default-buffer-method 'selected-window)
   ;; (setq ido-default-file-method 'selected-window)
