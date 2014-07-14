@@ -41,6 +41,9 @@ el-get automatically synchronously if we don't have installed it yet.
                        :website "http://www.emacswiki.org/emacs/moccur-edit.el"
                        :features "moccur-edit"
                        :depends color-moccur))
+#+end_src
+*** python-mode
+#+begin_src emacs-lisp :results silent
   (add-to-list 'el-get-sources
                '(:name python-mode
                        :type github
@@ -57,6 +60,16 @@ el-get automatically synchronously if we don't have installed it yet.
                                   (add-to-list 'interpreter-mode-alist
                                                '("python" . python-mode)))))
 #+end_src
+*** restclient.el
+#+begin_src emacs-lisp :results silent
+  (add-to-list 'el-get-sources
+               '(:name restclient.el
+                       :type github
+                       :pkgname "pashky/restclient.el"
+                       :description "This is a tool to manually explore and test HTTP REST webservices."
+                       :features (restclient)))
+#+end_src
+
 
 * Basic Configuration
 ** enabled advanced features
