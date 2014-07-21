@@ -271,7 +271,7 @@ But I don't know if this is good enough?? Do I need to set-keyboard-coding-syste
 
 ** zenburn color theme
 #+begin_src emacs-lisp :results silent
-  (el-get 'sync "zenburn-theme")
+  (el-get 'sync "color-theme-zenburn")
   (message "custom-theme-load-path=%s" custom-theme-load-path)
   (load-theme 'zenburn t)
 #+end_src
@@ -291,12 +291,10 @@ Some of my snippets need time-stamp package
 Enable yasnippet
 #+begin_src emacs-lisp :results silent
   (el-get 'sync "yasnippet")
-  (yas/global-mode t)
-  (setq yas/snippet-dirs (abaw/join-path abaw/top-dir "snippets"))
-  (yas/load-directory yas/snippet-dirs)
+  (yas-global-mode t)
+  (setq yas-snippet-dirs (cons (abaw/join-path abaw/top-dir "snippets") yas-snippet-dirs))
 
-  ;; if we use setq, the default "TAB" key will not be unbind.
-  (custom-set-variables '(yas/trigger-key "<C-tab>"))
+  (define-key yas-minor-mode-map (kbd "<C-tab>") 'yas-expand)
 #+end_src
 
 ** C-./C-, fast jump to temporarily saved place
