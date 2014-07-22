@@ -969,6 +969,44 @@ exclude DONE tasks.
   (setq py-no-completion-calls-dabbrev-expand-p nil)
 #+end_src
 
+* Projectile
+#+begin_src emacs-lisp :tangle yes
+  (el-get 'sync "projectile")
+#+end_src
+
+- define project root files
+#+begin_src emacs-lisp :tangle yes
+  (loop for root-file in (list "build.requires" ;; ESPP packages
+                               "Vagrantfile"    ;; Some projects have Vagrantfile with them
+                               )
+        do (add-to-list 'projectile-project-root-files root-file))
+
+#+end_src
+
+- ignore some files/directories
+#+begin_src emacs-lisp :tangle yes
+  (loop for ignored-dir in (list "rpmbuild"
+                                 )
+        do (add-to-list 'projectile-globally-ignored-directories ignored-dir t))
+
+#+end_src
+
+- give me the dired buffer when switching projects
+#+begin_src emacs-lisp :tangle yes
+  (setq projectile-switch-project-action 'projectile-dired)
+#+end_src
+
+** Some helper functions
+#+begin_src emacs-lisp :tangle yes
+  (defun abaw/projectile-shell ()
+    (interactive)
+    (let ((project-name (abbreviate-file-name (projectile-project-root)))
+          (default-directory (projectile-project-root)))
+      (shell (format "*shell:%s*" project-name))))
+
+  (define-key projectile-command-map (kbd "!") 'abaw/projectile-shell)
+#+end_src
+
 * Per-host customization
 ** additional configuration for this host
 #+begin_src emacs-lisp :results silent
