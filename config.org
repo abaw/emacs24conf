@@ -293,6 +293,7 @@ Enable yasnippet
   (el-get 'sync "yasnippet")
   (yas-global-mode t)
   (setq yas-snippet-dirs (cons (abaw/join-path abaw/top-dir "snippets") yas-snippet-dirs))
+  (yas-reload-all)
 
   (define-key yas-minor-mode-map (kbd "<C-tab>") 'yas-expand)
 #+end_src
