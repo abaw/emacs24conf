@@ -320,7 +320,7 @@ These code are modified from someone's .emcas.el.
 
 #+end_src
 
-** wrap long time
+** wrap long lines
 #+begin_src emacs-lisp :results silent
 (set-default 'truncate-lines nil)
 (setq truncate-partial-width-windows nil)
