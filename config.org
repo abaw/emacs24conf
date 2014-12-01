@@ -973,6 +973,7 @@ exclude DONE tasks.
 * Projectile
 #+begin_src emacs-lisp :tangle yes
   (el-get 'sync "projectile")
+  (projectile-global-mode)
 #+end_src
 
 - define project root files
@@ -1000,12 +1001,20 @@ exclude DONE tasks.
 ** Some helper functions
 #+begin_src emacs-lisp :tangle yes
   (defun abaw/projectile-shell ()
+    "run and switch the associated shell buffer for this project"
     (interactive)
     (let ((project-name (abbreviate-file-name (projectile-project-root)))
           (default-directory (projectile-project-root)))
       (shell (format "*shell:%s*" project-name))))
 
+  (defun abaw/projectile-switch-project-shell ()
+    "switch to other project associated shell"
+    (interactive)
+    (let ((projectile-switch-project-action 'abaw/projectile-shell))
+      (call-interactively 'projectile-switch-project)))
+
   (define-key projectile-command-map (kbd "!") 'abaw/projectile-shell)
+  (define-key projectile-command-map (kbd "1") 'abaw/projectile-switch-project-shell)
 #+end_src
 
 * Per-host customization
