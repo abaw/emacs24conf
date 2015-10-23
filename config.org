@@ -1050,6 +1050,7 @@ exclude DONE tasks.
     (defadvice server-ensure-safe-dir (around always-safe-dir-on-windows activate)
       "We don't check the directory for the emacs server on Windows."
       t))
-  (server-start)
+  (unless (server-running-p)
+    (server-start))
   (setenv "EDITOR" "emacsclient")
 #+end_src
