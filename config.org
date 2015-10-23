@@ -983,6 +983,12 @@ exclude DONE tasks.
   (setq py-no-completion-calls-dabbrev-expand-p nil)
 #+end_src
 
+** go
+#+begin_src emacs-lisp :tangle yes
+  (el-get 'sync 'go-mode)
+  (require 'go-mode-autoloads)
+  (add-hook 'before-save-hook 'gofmt-before-save)
+#+end_src
 * Projectile
 #+begin_src emacs-lisp :tangle yes
   (el-get 'sync "projectile")

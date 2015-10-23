@@ -54,3 +54,7 @@
                         (org-agenda-todo-ignore-scheduled 'future)
                         (org-agenda-todo-ignore-deadlines 'future)))))))
 #+end_src
+* go
+#+begin_src emacs-lisp :tangle yes
+(setenv "GOPATH" (file-truename "~/go"))
+#+end_src
